@@ -207,4 +207,19 @@
             }
         }
     }
+
+    @media (max-width: 1101px) {
+        .header {
+            &__nav {
+                display: none;
+            }
+            &__controls {
+                &-item {
+                    > span:not(:has(svg)) {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
 </style>

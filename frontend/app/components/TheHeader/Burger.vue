@@ -25,7 +25,7 @@
         align-items: center;
         justify-content: center;
         gap: rem(6);
-        @media (min-width: 768px) {
+        @media (min-width: 1110px) {
             display: none;
         }
         @media (pointer: fine) {

@@ -61,7 +61,7 @@
             display: grid;
             grid-template-columns: auto 35%;
             justify-content: space-between;
-            gap: lineScale(128, 64, 480, 1920);
+            gap: lineScale(128, 32, 480, 1920);
             padding: lineScale(32, 16, 480, 1920);
             background-color: $c-0C374B;
         }
@@ -195,6 +195,15 @@
                         background-color: $c-telegram;
                     }
                 }
+            }
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .connection {
+            &__wrapper {
+                display: flex;
+                flex-direction: column;
             }
         }
     }

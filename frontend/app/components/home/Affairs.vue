@@ -232,4 +232,18 @@
             }
         }
     }
+
+    @media (max-width: 1024px) {
+        .home-affairs {
+            &__slide {
+                &-wrapper {
+                    display: flex;
+                    flex-direction: column-reverse;
+                }
+                &-image-container {
+                    height: rem(240);
+                }
+            }
+        }
+    }
 </style>

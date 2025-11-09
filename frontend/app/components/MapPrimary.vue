@@ -115,4 +115,17 @@
             inset: 0;
         }
     }
+
+    @media (max-width: 890px) {
+        .map-primary {
+            &__wrapper {
+                display: flex;
+                flex-direction: column-reverse;
+            }
+            &__map {
+                position: initial;
+                height: rem(280);
+            }
+        }
+    }
 </style>

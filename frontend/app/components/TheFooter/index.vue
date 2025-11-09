@@ -202,7 +202,7 @@
             &-inner {
                 text-transform: uppercase;
                 color: rgba($c-BFC4D5, 0.25);
-                font-size: rem(96);
+                font-size: lineScale(96, 64, 480, 1920);
                 white-space: nowrap;
                 animation: runline 10s linear infinite;
             }
@@ -265,6 +265,7 @@
             align-items: flex-end;
             text-align: right;
             &-item {
+                white-space: nowrap;
                 @include hover-blick-line;
                 &--tel {
                     font-size: lineScale(40, 24, 480, 1920);
@@ -348,6 +349,32 @@
             &-logo {
                 max-width: rem(68);
                 height: rem(24);
+            }
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .footer {
+            &__label {
+                grid-area: label;
+            }
+            &__nav {
+                grid-area: nav;
+            }
+            &__contact {
+                grid-area: contact;
+            }
+            &__body {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    'label'
+                    'contact'
+                    'nav';
+            }
+            &__controls {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
             }
         }
     }

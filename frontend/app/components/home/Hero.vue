@@ -229,7 +229,7 @@
             padding-top: rem(164);
         }
         &__title {
-            font-size: lineScale(48, 40, 768, 1920);
+            font-size: lineScale(48, 32, 768, 1920);
             text-wrap: balance;
         }
         &__desc {
@@ -267,11 +267,11 @@
                 padding: rem(32) lineScale(64, 32, 480, 1920) rem(32) 0;
             }
             &-desc {
-                font-size: rem(14);
+                font-size: lineScale(14, 12, 480, 1920);
                 opacity: 0.8;
             }
             &-title {
-                font-size: lineScale(32, 24, 768, 1920);
+                font-size: lineScale(32, 20, 768, 1920);
                 margin-top: rem(8);
             }
             &-icon {
@@ -390,6 +390,32 @@
                     will-change: stroke-dashoffset;
                     transition: stroke-dashoffset 0.1s linear;
                 }
+            }
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .home-hero {
+            &__container {
+                grid-template-columns: 1fr;
+                grid-template-rows: initial;
+                grid-template-areas:
+                    'titlebox'
+                    'slider'
+                    'button'
+                    'footer';
+                min-height: fit-content;
+            }
+            &__titlebox {
+                height: fit-content;
+                padding-top: rem(128);
+            }
+            &__button-container {
+                align-self: center;
+                justify-self: center;
+            }
+            &__slider {
+                display: none;
             }
         }
     }

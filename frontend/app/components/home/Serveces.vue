@@ -152,9 +152,11 @@
                 @supports (mask-image: url()) {
                     background-color: rgba($c-0C374B, 0.15);
                     mask-image: linear-gradient(to top, #000 50%, transparent 100%);
-                    translate: 0 50%;
                     will-change: translate;
                     transition: translate $td $tf;
+                    @media (pointer: fine) {
+                        translate: 0 50%;
+                    }
                 }
             }
             @media (pointer: fine) {
@@ -180,13 +182,18 @@
                 font-weight: $fw-semi;
             }
             &-body {
-                flex: 0 1 calc(var(--h) - var(--h));
                 display: flex;
                 flex-direction: column;
                 gap: rem(16);
                 min-height: 0;
                 overflow: hidden;
                 transition: all $td $tf;
+                @media (pointer: fine) {
+                    flex: 0 1 calc(var(--h) - var(--h));
+                }
+                @media (pointer: coarse) {
+                    margin-top: rem(16);
+                }
             }
             &-desc {
                 font-size: rem(12);
@@ -237,6 +244,41 @@
             &-button {
                 margin-top: rem(64);
                 @include button-primary;
+            }
+        }
+    }
+
+    @media (max-width: 1390px) {
+        .home-services {
+            &__list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            &__banner {
+                grid-column: span 3;
+            }
+        }
+    }
+    @media (max-width: 920px) {
+        .home-services {
+            &__list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            &__banner {
+                grid-column: span 2;
+            }
+        }
+    }
+    @media (max-width: 580px) {
+        .home-services {
+            &__list {
+                grid-template-columns: 1fr;
+            }
+            &__item {
+                aspect-ratio: auto;
+                min-height: rem(290);
+            }
+            &__banner {
+                grid-column: span 1;
             }
         }
     }

@@ -135,7 +135,7 @@
         &__container {
             display: grid;
             grid-template-columns: 35% auto;
-            gap: rem(64);
+            gap: lineScale(64, 32, 480, 1920);
             @include content-container;
         }
         &__sider,
@@ -243,6 +243,34 @@
                 ul > li {
                     list-style: disc outside;
                 }
+            }
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .home-advant {
+            padding: rem(64) 0;
+            &__container {
+                display: flex;
+                flex-direction: column;
+            }
+            &__image {
+                display: none;
+            }
+            &__sider,
+            &__body {
+                padding: 0;
+            }
+            &__body {
+                margin-top: rem(64);
+            }
+        }
+    }
+
+    @media (max-width: 768px) {
+        .home-advant {
+            &__progressbar {
+                left: lineScale(64, 32, 480, 1920);
             }
         }
     }
