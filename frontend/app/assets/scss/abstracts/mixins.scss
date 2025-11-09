@@ -14,6 +14,103 @@
 }
 
 // components
+@mixin button-primary(
+    $width: fit-content,
+    $init-color: $c-EEF1F4,
+    $anim-color: $c-0C374B,
+    $padding: rem(18) rem(36),
+    $icon-rotate: -45deg,
+    $font-size: rem(14)
+) {
+    position: relative;
+    width: $width;
+    display: flex;
+    align-items: center;
+    gap: rem(8);
+    text-transform: uppercase;
+    font-size: $font-size;
+    font-weight: $fw-semi;
+    white-space: nowrap;
+    padding: $padding;
+    background-color: $init-color;
+    overflow: hidden;
+    transition: all $td $tf;
+    @include arrow-translate;
+    &::before {
+        content: '';
+        position: absolute;
+        z-index: 0;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 130%;
+        translate: -97% 0;
+        background-color: $anim-color;
+        clip-path: polygon(100% 0%, 80% 100%, 0% 100%, 0% 0%);
+        pointer-events: none;
+        transition: translate $td $tf;
+    }
+    > span {
+        position: relative;
+    }
+    > span:has(svg) {
+        rotate: $icon-rotate;
+        overflow: hidden;
+    }
+    @media (pointer: fine) {
+        &:hover {
+            color: $c-FFFFFF;
+            &::before {
+                translate: 0 0;
+            }
+            > span > svg {
+                animation: arrow-translate $td $tf;
+            }
+        }
+    }
+}
+
+@mixin link-primary($init-color: currentColor, $anim-color: $c-accent, $bg-color: $c-0C374B) {
+    cursor: pointer;
+    position: relative;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    gap: rem(8);
+    padding: rem(6) rem(16);
+    transition: color $td $tf;
+    &::before {
+        content: '';
+        position: absolute;
+        z-index: 0;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 0;
+        pointer-events: none;
+        background-color: $bg-color;
+        transition: width $td $tf-spring;
+    }
+    span {
+        position: relative;
+    }
+    span:has(svg) {
+        translate: 0 rem(2);
+        overflow: hidden;
+    }
+    @media (pointer: fine) {
+        &:hover {
+            color: $anim-color;
+            &::before {
+                width: 100%;
+            }
+            span > svg {
+                animation: arrow-translate $td $tf;
+            }
+        }
+    }
+    @include arrow-translate;
+}
 
 @mixin skeleton(
     $color: $skeleton-color,
@@ -134,6 +231,35 @@
     }
 }
 
+@mixin flowing-fiil($init-color: transparent, $anim-color: $c-0C374B) {
+    position: relative;
+    background-color: $init-color;
+    overflow: hidden;
+    transition: all $td $tf;
+    &::before {
+        content: '';
+        position: absolute;
+        z-index: 0;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 145%;
+        translate: -97% 0;
+        background-color: $anim-color;
+        clip-path: polygon(100% 0%, 70% 100%, 0% 100%, 0% 0%);
+        pointer-events: none;
+        transition: translate $td $tf;
+    }
+    @media (pointer: fine) {
+        &:hover {
+            color: $c-FFFFFF;
+            &::before {
+                translate: 0 0;
+            }
+        }
+    }
+}
+
 @mixin hover-underline($color: currentColor) {
     position: relative;
     width: fit-content;
@@ -160,8 +286,9 @@
     }
 }
 
-@mixin hover-blick-line($init-color: currentColor, $anim-color: $c-000000) {
+@mixin hover-blick-line($init-color: currentColor, $anim-color: $c-accent) {
     position: relative;
+    width: fit-content;
     line-height: 1.5;
     color: $init-color;
     transition: color $td $tf;
@@ -174,7 +301,7 @@
         width: 0;
         height: rem(1);
         background-color: $init-color;
-        transition: all $td $tf;
+        transition: all calc($td / 2) $tf;
     }
     @media (pointer: fine) {
         &:hover {

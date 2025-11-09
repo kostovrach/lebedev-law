@@ -1,6 +1,7 @@
 <template>
-    <div class="page">
+    <div id="page" class="page">
         <TheHeader />
+        <TheActionButton />
         <main class="content">
             <slot></slot>
         </main>

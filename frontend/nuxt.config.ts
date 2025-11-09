@@ -63,9 +63,6 @@ export default defineNuxtConfig({
     // -------------------vue-yandex-maps--------------------------
     yandexMaps: {
         apikey: process.env.YANDEX_API_KEY || 'empty',
-        servicesApikeys: {
-            suggest: process.env.YANDEX_SUGGEST_KEY || 'empty',
-        },
         strictMode: true,
         lang: 'ru_RU',
         version: 'v3',

@@ -1,8 +1,8 @@
-export function normalizeDate(dateStr: string): string {
+export function normalizeDate(dateStr: string, day?: boolean): string {
     const date = new Date(dateStr);
     return date.toLocaleDateString('ru-RU', {
-        day: '2-digit',
-        month: '2-digit',
+        day: day === false ? undefined : '2-digit',
+        month: 'long',
         year: 'numeric',
     });
 }

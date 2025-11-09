@@ -71,14 +71,11 @@
     .rate-widgets {
         display: flex;
         flex-wrap: wrap;
-        gap: rem(16) rem(32);
+        gap: rem(16);
         &__item {
             width: 100%;
-            flex: 0 1 rem(300);
-            @media (max-width: 768px) {
-                flex-grow: 1;
-            }
-            // background-color: rgba($c-D4E1E7, 0.5); // <-----
+            flex: 1 1 rem(240);
+            background-color: $c-BFC4D5;
             border-radius: rem(32) rem(32) 0 rem(32);
             &-wrapper {
                 display: grid;
@@ -94,7 +91,7 @@
             }
             &-title {
                 grid-area: title;
-                // font-weight: $fw-semi; // <-----
+                font-weight: $fw-semi;
             }
             &-counter {
                 grid-area: counter;
@@ -109,7 +106,7 @@
             }
             &-image-container {
                 grid-area: image;
-                max-width: rem(100);
+                max-width: rem(80);
                 img {
                     width: 100%;
                     height: 100%;

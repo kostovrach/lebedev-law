@@ -6,8 +6,8 @@
             @mouseleave="markersIdx = null"
             :settings="{
                 location: {
-                    center: [50.18, 53.22],
-                    zoom: 12,
+                    center: props.mapCenter,
+                    zoom: props.zoom,
                 },
             }"
         >
@@ -20,39 +20,28 @@
             <YandexMapControls :settings="{ position: 'left top' }">
                 <YandexMapOpenMapsButton />
             </YandexMapControls>
-            <!-- <YandexMapUiMarker
-                v-for="(marker, idx) in markers?.addresses"
+            <YandexMapUiMarker
+                v-for="(marker, idx) in props.markers"
                 :key="idx"
                 :settings="{
                     onClick: () => (markersIdx === idx ? (markersIdx = null) : (markersIdx = idx)),
-                    coordinates: marker.point.coordinates,
-                    title: '',
-                    color: 'blue',
+                    coordinates: marker.coordinates,
+                    title: marker.title,
+                    color: 'brightblue',
                     popup: { show: markersIdx === idx, position: 'bottom right', offset: 10 },
                 }"
             >
                 <template #popup>
-                    <div class="map__marker">
-                        <div class="map__marker-head">
-                            {{ marker.address }}
-                        </div>
-                        <div class="map__marker-body" v-if="marker.phone">
-                            Телефон:
-                            <a :href="`tel:${marker.phone.trim().split(' ').join('')}`">
-                                {{ marker.phone }}
-                            </a>
-                        </div>
-                        <div class="map__marker-footer" v-if="marker.working_hours">
-                            {{ marker.working_hours }}
-                        </div>
+                    <div class="map__marker" v-if="marker.body">
+                        {{ marker.body }}
                     </div>
                 </template>
-            </YandexMapUiMarker> -->
-            <!-- <YandexMapSignpost
+            </YandexMapUiMarker>
+            <YandexMapSignpost
                 :settings="{
-                    points: markers?.addresses.map((el) => el.point.coordinates) as LngLat[],
+                    points: markers.map((el) => el.coordinates),
                 }"
-            /> -->
+            />
         </YandexMap>
     </ClientOnly>
 </template>
@@ -72,6 +61,23 @@
         YandexMapOpenMapsButton,
     } from 'vue-yandex-maps';
 
+    const props = withDefaults(
+        defineProps<{
+            mapCenter?: LngLat;
+            zoom?: number;
+            markers?: {
+                coordinates: LngLat;
+                title: string;
+                body?: string;
+            }[];
+        }>(),
+        {
+            mapCenter: () => [50.18, 53.22],
+            zoom: 12,
+            markers: () => [],
+        }
+    );
+
     // state
     const markersIdx = ref<number | null>(null);
 </script>
@@ -80,6 +86,7 @@
     @use '~/assets/scss/abstracts' as *;
 
     .map {
-        $p: &;
+        width: 100%;
+        height: 100%;
     }
 </style>

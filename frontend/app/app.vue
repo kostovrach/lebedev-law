@@ -18,6 +18,7 @@
 
     html,
     body {
-        color: $c-000000;
+        color: $c-text;
+        background-color: $c-F8F8FA;
     }
 </style>
