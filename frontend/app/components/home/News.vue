@@ -116,7 +116,7 @@
             flex: 1 1 rem(380);
             cursor: default;
             background-color: $c-FFFFFF;
-            @include flowing-fiil;
+            @include hover-curtain;
             &-wrapper {
                 position: relative;
                 z-index: 1;

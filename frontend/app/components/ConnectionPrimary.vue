@@ -1,37 +1,43 @@
 <template>
-    <section class="connection">
-        <div class="connection__container">
-            <div class="connection__wrapper">
-                <div class="connection__titlebox">
-                    <h2 class="connection__title">
+    <section class="connection-primary">
+        <div class="connection-primary__container">
+            <div class="connection-primary__wrapper">
+                <div class="connection-primary__titlebox">
+                    <h2 class="connection-primary__title">
                         Получите
                         <span>бесплатную</span>
                         первичную консультацию — без скрытых платежей и обязательств.
                     </h2>
-                    <div class="connection__accent">
+                    <div class="connection-primary__accent">
                         0
                         <span class="ruble"></span>
                     </div>
                 </div>
-                <div class="connection__card">
-                    <div class="connection__card-head">
-                        <picture class="connection__card-image-container">
-                            <img class="connection__card-image" src="/img/temp/temp.jpg" alt="#" />
+                <div class="connection-primary__card">
+                    <div class="connection-primary__card-head">
+                        <picture class="connection-primary__card-image-container">
+                            <img
+                                class="connection-primary__card-image"
+                                src="/img/temp/temp.jpg"
+                                alt="#"
+                            />
                         </picture>
-                        <h3 class="connection__card-title">Захар Лебедев</h3>
-                        <span class="connection__card-subtitle">арбитражный управляющий</span>
+                        <h3 class="connection-primary__card-title">Захар Лебедев</h3>
+                        <span class="connection-primary__card-subtitle">
+                            арбитражный управляющий
+                        </span>
                     </div>
-                    <p class="connection__card-content">
+                    <p class="connection-primary__card-content">
                         Заполните заявку на сайте с описанием Вашей ситуации или свяжитесь с нами
                         через Telegram, чтобы получить бесплатную консультацию
                     </p>
-                    <div class="connection__card-footer">
-                        <button class="connection__card-button" type="button">
+                    <div class="connection-primary__card-footer">
+                        <button class="connection-primary__card-button" type="button">
                             <span>Заполнить заявку</span>
                             <span><SvgSprite type="arrow" :size="18" /></span>
                         </button>
                         <a
-                            class="connection__card-link"
+                            class="connection-primary__card-link"
                             href="https://example.com"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -51,7 +57,7 @@
 <style scoped lang="scss">
     @use '~/assets/scss/abstracts' as *;
 
-    .connection {
+    .connection-primary {
         color: $c-FFFFFF;
         margin: lineScale(128, 64, 480, 1920) 0;
         &__container {
@@ -200,7 +206,7 @@
     }
 
     @media (max-width: 1024px) {
-        .connection {
+        .connection-primary {
             &__wrapper {
                 display: flex;
                 flex-direction: column;

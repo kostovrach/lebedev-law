@@ -218,31 +218,13 @@
                 font-size: lineScale(32, 24, 480, 1920);
             }
             &-content {
-                display: flex;
-                flex-direction: column;
-                gap: rem(16);
-                font-size: lineScale(17, 15, 480, 1920);
-                line-height: 1.4;
                 color: $c-BFC4D5;
                 opacity: 0.8;
                 margin-top: rem(16);
-                h2,
-                h3,
-                h4,
-                h5,
-                h6 {
-                    font-size: lineScale(24, 20, 480, 1920);
-                }
-                ol > li,
-                ul > li {
-                    margin-left: rem(20);
-                }
-                ol > li {
-                    list-style: decimal outside;
-                }
-                ul > li {
-                    list-style: disc outside;
-                }
+                @include text-content(
+                    $heading-size: lineScale(24, 20, 480, 1920),
+                    $font-size: lineScale(17, 15, 480, 1920)
+                );
             }
         }
     }

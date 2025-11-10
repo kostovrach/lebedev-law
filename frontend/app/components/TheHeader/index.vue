@@ -7,7 +7,7 @@
                     v-for="(link, idx) in navLinks"
                     :key="idx"
                     :to="{ name: link.path.name, params: link.path.params }"
-                    :class="['header__nav-link', { current: route.name !== link.path.name }]"
+                    :class="['header__nav-link', { current: route.name === link.path.name }]"
                 >
                     {{ link.label }}
                 </NuxtLink>
@@ -52,7 +52,7 @@
         {
             label: 'Услуги',
             path: {
-                name: 'index',
+                name: 'services',
             },
         },
         {
@@ -82,7 +82,7 @@
         {
             label: 'Вопросы',
             path: {
-                name: 'index',
+                name: 'faq',
             },
         },
         {

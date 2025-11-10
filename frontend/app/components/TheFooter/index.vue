@@ -29,6 +29,7 @@
                             :key="idx"
                             class="footer__map-link"
                             :to="{ name: link.path.name, params: link.path.params }"
+                            v-show="link.path.name !== route.name"
                         >
                             {{ link.label }}
                         </NuxtLink>
@@ -109,7 +110,7 @@
 
     const route = useRoute();
 
-    const runlineItems: string[] = ['КОМАНДА', 'ЛЕБЕДЕВ', 'юристы', 'защита'];
+    const runlineItems: string[] = ['команда', 'лебедев', 'юристы', 'защита'];
 
     const navItems: {
         label: string;
@@ -133,7 +134,7 @@
         {
             label: 'Услуги',
             path: {
-                name: 'index',
+                name: 'services',
             },
         },
         {
@@ -169,7 +170,7 @@
         {
             label: 'Вопросы',
             path: {
-                name: 'index',
+                name: 'faq',
             },
         },
     ];
@@ -180,6 +181,7 @@
 
     .footer {
         $p: &;
+
         &__container {
             display: flex;
             flex-direction: column;
