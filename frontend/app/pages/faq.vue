@@ -48,8 +48,8 @@
                     </aside>
                     <div class="faq__content">
                         <FaqIssueSection
-                            v-for="(issue, idx) in searchResult"
-                            :key="idx"
+                            v-for="issue in searchResult"
+                            :key="issue.id"
                             :id="slugify(issue.title)"
                             class="faq__issue"
                             :title="issue.title"
@@ -95,8 +95,7 @@
             @include content-block($margin: rem(96));
         }
         &__image-container {
-            width: 100%;
-            height: rem(320);
+            @include page-cover;
         }
         &__image {
             width: 100%;
@@ -123,41 +122,8 @@
             gap: rem(64);
         }
         &__searchbar {
-            cursor: pointer;
-            position: relative;
-            width: 100%;
             max-width: rem(480);
-            display: flex;
-            align-items: center;
-            border-bottom: rem(1) solid $c-1C5771-025;
-            &:has(input:focus),
-            &:not(:has(input:placeholder-shown)) {
-                &::before {
-                    width: 100%;
-                }
-            }
-            &::before {
-                content: '';
-                position: absolute;
-                left: 0;
-                bottom: 0;
-                width: 0;
-                height: rem(2);
-                background-color: $c-accent;
-                transition: width $td $tf;
-            }
-            &-input {
-                cursor: pointer;
-                width: 100%;
-                font-family: inherit;
-                font-size: rem(17);
-                color: inherit;
-                padding: rem(18) 0;
-                background-color: transparent;
-            }
-            &-icon {
-                color: $c-accent;
-            }
+            @include searchbar;
         }
         &__chips {
             display: flex;
@@ -166,19 +132,7 @@
             gap: rem(8);
             max-width: 110ch;
             &-item {
-                display: block;
-                font-size: rem(14);
-                opacity: 0.75;
-                padding: rem(6) rem(16);
-                border-radius: rem(32);
-                transition: all $td $tf;
-                @include hover-curtain($init-color: $c-EEF1F4);
-                @media (pointer: fine) {
-                    &:hover {
-                        color: $c-FFFFFF;
-                        opacity: 1;
-                    }
-                }
+                @include chip;
             }
         }
         &__content {

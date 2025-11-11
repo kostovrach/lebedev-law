@@ -8,14 +8,13 @@
                 v-for="(item, idx) in props.blocks"
                 :key="idx"
                 :class="['faq-issue__item', { active: activeIdx === idx }]"
-                v-show="isClient"
             >
                 <div class="faq-issue__item-wrapper">
                     <button class="faq-issue__item-head" type="button" @click="setActiveIdx(idx)">
                         <h3 class="faq-issue__item-title">{{ item.title }}</h3>
                         <span class="faq-issue__item-icon"></span>
                     </button>
-                    <div ref="spoilerContentRefs" class="faq-issue__item-body">
+                    <div ref="spoilerContentRefs" class="faq-issue__item-body" v-show="isClient">
                         <div class="faq-issue__item-content" v-html="item.content"></div>
                         <NuxtLink class="faq-issue__item-link" :to="{ name: 'index' }">
                             <span>Подробнее в статье</span>

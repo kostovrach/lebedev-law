@@ -152,13 +152,13 @@
         {
             label: 'Практика',
             path: {
-                name: 'index',
+                name: 'cases',
             },
         },
         {
             label: 'Документы',
             path: {
-                name: 'index',
+                name: 'docs',
             },
         },
         {

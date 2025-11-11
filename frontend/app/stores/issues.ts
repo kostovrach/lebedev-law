@@ -2,6 +2,7 @@ import type { FuseResult, IFuseOptions } from 'fuse.js';
 import type FuseType from 'fuse.js';
 
 export interface IFaqIssue {
+    id: number | string;
     title: string;
     blocks: {
         title: string;
@@ -18,6 +19,7 @@ export const useIssuesStore = defineStore('issues', () => {
     // temp-data =====================================================================
     issuesList.value = [
         {
+            id: '96406916-be18-4a41-83b5-41bdc3047625',
             title: 'О работе бюро',
             blocks: [
                 {
@@ -38,6 +40,7 @@ export const useIssuesStore = defineStore('issues', () => {
             ],
         },
         {
+            id: '27d7ae5d-c9b4-435b-a284-0c95e7dd5da0',
             title: 'Уголовное право',
             blocks: [
                 {
@@ -73,6 +76,7 @@ export const useIssuesStore = defineStore('issues', () => {
             ],
         },
         {
+            id: 'e8ee6fb4-0cc3-4058-acf6-f6bf861e2e82',
             title: 'Гражданское право',
             blocks: [
                 {

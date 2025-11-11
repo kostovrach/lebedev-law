@@ -113,6 +113,31 @@
     @include arrow-translate;
 }
 
+@mixin chip() {
+    cursor: pointer;
+    width: fit-content;
+    padding: rem(6) rem(16);
+    border-radius: rem(32);
+    text-align: center;
+    @include hover-curtain($init-color: $c-EEF1F4);
+    &.active {
+        color: $c-FFFFFF;
+        pointer-events: none;
+        &::before {
+            translate: 0 0;
+            background-color: $c-accent;
+        }
+    }
+    &:active {
+        scale: 0.99;
+    }
+}
+
+@mixin page-cover() {
+    width: 100%;
+    height: lineScale(320, 240, 480, 1920);
+}
+
 @mixin skeleton(
     $color: $skeleton-color,
     $anim-color: linear-gradient(90deg, transparent, rgba(#ffffff, 0.4), transparent)
@@ -238,6 +263,43 @@
                 text-decoration: none;
             }
         }
+    }
+}
+
+@mixin searchbar($anim-color: $c-accent, $icon-color: $c-accent, $border-color: $c-1C5771-025) {
+    cursor: pointer;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    border-bottom: rem(1) solid $border-color;
+    &:has(input:focus),
+    &:not(:has(input:placeholder-shown)) {
+        &::before {
+            width: 100%;
+        }
+    }
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0;
+        height: rem(2);
+        background-color: $anim-color;
+        transition: width $td $tf;
+    }
+    > input {
+        cursor: pointer;
+        width: 100%;
+        font-family: inherit;
+        font-size: rem(17);
+        color: inherit;
+        padding: rem(18) 0;
+        background-color: transparent;
+    }
+    > span:has(svg) {
+        color: $icon-color;
     }
 }
 
@@ -395,6 +457,195 @@
     -ms-overflow-style: none;
     &::-webkit-scrollbar {
         display: none;
+    }
+}
+
+@mixin liquid-fill($anim-color: $c-0C374B) {
+    @media (pointer: fine) and (hover: hover) {
+        .liquid-item {
+            position: relative;
+            transition: all $td ease-in;
+        }
+        .liquid-fill {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 110%;
+            height: 100%;
+            background-color: $anim-color;
+            z-index: -1;
+            transform-origin: center;
+            clip-path: inset(0% 0% 0% 0% round 0 0 0 0);
+            transform: scaleY(0);
+            translate: -50% 0;
+            pointer-events: none;
+            &.from-top {
+                transform-origin: top center;
+                animation: liquidFromTop 0.4s linear forwards;
+            }
+            &.from-bottom {
+                transform-origin: bottom center;
+                animation: liquidFromBottom 0.4s linear forwards;
+            }
+            &.exit-top {
+                transform-origin: top center;
+                animation: liquidExitTop 0.4s linear forwards;
+            }
+            &.exit-bottom {
+                transform-origin: bottom center;
+                animation: liquidExitBottom 0.4s linear forwards;
+            }
+            &.seamless-to-next {
+                transform-origin: bottom center;
+                animation: liquidSeamlessToNext 0.4s linear forwards;
+            }
+            &.seamless-to-prev {
+                transform-origin: top center;
+                animation: liquidSeamlessToPrev 0.4s linear forwards;
+            }
+            &.seamless-from-prev {
+                transform-origin: top center;
+                animation: liquidSeamlessFromPrev 0.4s linear forwards;
+            }
+            &.seamless-from-next {
+                transform-origin: bottom center;
+                animation: liquidSeamlessFromNext 0.4s linear forwards;
+            }
+            @keyframes liquidFromTop {
+                0% {
+                    opacity: 1;
+                    transform: scaleY(0);
+                }
+                30% {
+                    transform: scaleY(0.4);
+                }
+                60% {
+                    transform: scaleY(0.7);
+                }
+                100% {
+                    opacity: 1;
+                    transform: scaleY(1);
+                }
+            }
+            @keyframes liquidFromBottom {
+                0% {
+                    opacity: 1;
+                    transform: scaleY(0);
+                }
+                30% {
+                    transform: scaleY(0.4);
+                }
+                60% {
+                    transform: scaleY(0.7);
+                }
+                100% {
+                    opacity: 1;
+                    transform: scaleY(1);
+                }
+            }
+            @keyframes liquidExitTop {
+                0% {
+                    opacity: 1;
+                    transform: scaleY(1);
+                }
+                40% {
+                    transform: scaleY(0.7);
+                }
+                70% {
+                    transform: scaleY(0.4);
+                }
+                100% {
+                    transform: scaleY(0);
+                }
+            }
+            @keyframes liquidExitBottom {
+                0% {
+                    opacity: 1;
+                    transform: scaleY(1);
+                }
+                40% {
+                    transform: scaleY(0.7);
+                }
+                70% {
+                    transform: scaleY(0.4);
+                }
+                100% {
+                    transform: scaleY(0);
+                }
+            }
+            @keyframes liquidSeamlessToNext {
+                0% {
+                    opacity: 1;
+                    transform: scaleY(1);
+                }
+                30% {
+                    transform: scaleY(0.8);
+                }
+                60% {
+                    transform: scaleY(0.5);
+                }
+                100% {
+                    opacity: 1;
+                    transform: scaleY(0);
+                }
+            }
+            @keyframes liquidSeamlessToPrev {
+                0% {
+                    opacity: 1;
+                    transform: scaleY(1);
+                }
+                30% {
+                    transform: scaleY(0.8);
+                }
+                60% {
+                    transform: scaleY(0.5);
+                }
+                100% {
+                    opacity: 1;
+                    transform: scaleY(0);
+                }
+            }
+            @keyframes liquidSeamlessFromPrev {
+                0% {
+                    opacity: 1;
+                    transform: scaleY(0.2);
+                    clip-path: inset(0% 0% 100% 0% round 0 0 100% 100%);
+                }
+                40% {
+                    transform: scaleY(0.5);
+                    clip-path: inset(0% 0% 40% 0% round 0 0 50% 50%);
+                }
+                70% {
+                    transform: scaleY(0.8);
+                    clip-path: inset(0% 0% 20% 0% round 0 0 30% 30%);
+                }
+                100% {
+                    opacity: 1;
+                    transform: scaleY(1);
+                    clip-path: inset(0% 0% 0% 0% round 0 0 0 0);
+                }
+            }
+            @keyframes liquidSeamlessFromNext {
+                0% {
+                    opacity: 1;
+                    transform: scaleY(0.2);
+                    clip-path: inset(100% 0% 0% 0% round 100% 100% 0 0);
+                }
+                40% {
+                    transform: scaleY(0.5);
+                    clip-path: inset(50% 0% 0% 0% round 60% 60% 0 0);
+                }
+                70% {
+                    transform: scaleY(0.8);
+                    clip-path: inset(20% 0% 0% 0% round 30% 30% 0 0);
+                }
+                100% {
+                    opacity: 1;
+                    transform: scaleY(1);
+                    clip-path: inset(0% 0% 0% 0% round 0 0 0 0);
+                }
+            }
+        }
     }
 }
 
