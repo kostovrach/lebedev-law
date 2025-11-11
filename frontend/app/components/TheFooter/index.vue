@@ -128,7 +128,7 @@
         {
             label: 'Команда',
             path: {
-                name: 'index',
+                name: 'about',
             },
         },
         {

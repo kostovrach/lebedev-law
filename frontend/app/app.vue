@@ -19,6 +19,6 @@
     html,
     body {
         color: $c-text;
-        background-color: $c-F8F8FA;
+        background-color: $c-main;
     }
 </style>

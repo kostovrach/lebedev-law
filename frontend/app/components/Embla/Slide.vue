@@ -1,5 +1,8 @@
 <template>
-    <div class="embla__slide" :style="{ flex: `0 0 ${props.width}` }">
+    <div
+        class="embla__slide"
+        :style="{ flex: `0 0 ${props.width}`, marginRight: `${props.spaceBetween}px` }"
+    >
         <slot></slot>
     </div>
 </template>
@@ -8,11 +11,13 @@
     interface Props {
         width?: string;
         padding?: string;
+        spaceBetween?: number;
     }
 
     const props = withDefaults(defineProps<Props>(), {
         width: 'fit-content',
         padding: '0',
+        spaceBetween: 32,
     });
 </script>
 
@@ -21,6 +26,5 @@
 
     .embla__slide {
         min-width: 0;
-        margin-right: lineScale(32, 14, 1024, 1440);
     }
 </style>

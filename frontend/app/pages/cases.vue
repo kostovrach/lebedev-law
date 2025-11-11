@@ -475,13 +475,15 @@
     ];
     // =====================================================
 
+    const route = useRoute();
+
     const chips = computed(() => [...new Set(tempArticles.flatMap((el) => el.tags))]);
 
     const DEFAULT_FILTER = 'all';
     const isClient = import.meta.client;
 
     const activeIdx = ref<number | null>(null);
-    const activeFilter = ref<string>(DEFAULT_FILTER);
+    const activeFilter = ref<string>((route.query.filter as string) || DEFAULT_FILTER);
 
     const spoilerContentRefs = ref<HTMLElement[]>([]);
     const heightsCache = new WeakMap<HTMLElement, number>();
