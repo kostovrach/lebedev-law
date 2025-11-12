@@ -12,7 +12,11 @@
                         через Telegram, чтобы получить бесплатную консультацию
                     </p>
                     <div class="connection-secondary__controls">
-                        <button class="connection-secondary__button" type="button">
+                        <button
+                            class="connection-secondary__button"
+                            type="button"
+                            @click="openForm"
+                        >
                             <span>Заполнить заявку</span>
                             <span><SvgSprite type="arrow" :size="18" /></span>
                         </button>
@@ -33,6 +37,9 @@
 </template>
 
 <script setup lang="ts">
+    import { useModal } from 'vue-final-modal';
+    import { ModalsForm } from '#components';
+
     const props = withDefaults(
         defineProps<{
             fill?: boolean;
@@ -41,6 +48,15 @@
             fill: false,
         }
     );
+
+    const { open: openForm, close: closeForm } = useModal({
+        component: ModalsForm,
+        attrs: {
+            onClose() {
+                closeForm();
+            },
+        },
+    });
 </script>
 
 <style scoped lang="scss">

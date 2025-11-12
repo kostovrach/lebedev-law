@@ -22,7 +22,12 @@
                 </div>
             </NuxtLink>
             <div class="home-hero__button-container">
-                <CircleButton class="home-hero__button" type="button" logic="double-line">
+                <CircleButton
+                    class="home-hero__button"
+                    type="button"
+                    logic="double-line"
+                    @click="openForm"
+                >
                     <span>Заказать консультацию</span>
                 </CircleButton>
             </div>
@@ -90,6 +95,17 @@
 
 <script setup lang="ts">
     import type { EmblaCarouselType } from 'embla-carousel';
+    import { useModal } from 'vue-final-modal';
+    import { ModalsForm } from '#components';
+
+    const { open: openForm, close: closeForm } = useModal({
+        component: ModalsForm,
+        attrs: {
+            onClose() {
+                closeForm();
+            },
+        },
+    });
 
     // temp-data ============================================
     const tempSlides: {

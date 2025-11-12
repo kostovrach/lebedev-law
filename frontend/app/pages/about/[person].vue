@@ -128,7 +128,11 @@
                                 v-for="article in person?.articles"
                                 :key="article.id"
                                 class="person-view__section-list-item"
-                                :to="{ name: 'index' }"
+                                :to="{
+                                    name: 'blog-article',
+                                    params: { article: slugify('example-article') },
+                                    query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
+                                }"
                             >
                                 <div class="person-view__section-list-item-wrapper">
                                     <h3

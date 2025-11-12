@@ -16,7 +16,14 @@
                     </button>
                     <div ref="spoilerContentRefs" class="faq-issue__item-body" v-show="isClient">
                         <div class="faq-issue__item-content" v-html="item.content"></div>
-                        <NuxtLink class="faq-issue__item-link" :to="{ name: 'index' }">
+                        <NuxtLink
+                            class="faq-issue__item-link"
+                            :to="{
+                                name: 'blog-article',
+                                params: { article: slugify('example-article') },
+                                query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
+                            }"
+                        >
                             <span>Подробнее в статье</span>
                             <span><SvgSprite type="arrow" :size="14" /></span>
                         </NuxtLink>

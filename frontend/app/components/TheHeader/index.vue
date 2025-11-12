@@ -76,7 +76,7 @@
         {
             label: 'Статьи',
             path: {
-                name: 'index',
+                name: 'blog',
             },
         },
         {
@@ -88,7 +88,7 @@
         {
             label: 'Контакты',
             path: {
-                name: 'index',
+                name: 'contact',
             },
         },
     ];

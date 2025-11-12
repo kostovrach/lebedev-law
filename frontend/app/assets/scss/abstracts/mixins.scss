@@ -116,6 +116,7 @@
 @mixin chip() {
     cursor: pointer;
     width: fit-content;
+    font-size: lineScale(16, 14, 480, 1920);
     padding: rem(6) rem(16);
     border-radius: rem(32);
     text-align: center;
@@ -168,7 +169,7 @@
     }
 }
 
-@mixin checkbox($size: rem(24), $accent-color: $c-000000, $contrast-color: $c-FFFFFF) {
+@mixin checkbox($size: rem(24), $accent-color: $c-accent, $contrast-color: $c-FFFFFF) {
     cursor: pointer;
     position: relative;
     width: $size;

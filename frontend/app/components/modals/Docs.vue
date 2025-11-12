@@ -83,6 +83,12 @@
         }
         &__button {
             align-self: flex-end;
+            transition: scale $td $tf-spring;
+            @media (pointer: fine) {
+                &:hover {
+                    rotate: 90deg;
+                }
+            }
         }
         &__titlebox {
             display: flex;
@@ -90,8 +96,12 @@
             gap: rem(32);
         }
         &__title {
+            font-size: lineScale(64, 32, 480, 1920);
         }
         &__tag {
+            font-size: lineScale(17, 15, 480, 1920);
+            color: $c-accent;
+            opacity: 0.5;
         }
         &__body {
             margin-top: rem(64);
@@ -99,28 +109,36 @@
         &__content {
             display: flex;
             flex-direction: column;
+            gap: rem(16);
+            font-size: lineScale(17, 15, 480, 1920);
+            line-height: 1.4;
             h2 {
-                font-size: lineScale(24, 18, 480, 1440);
-                margin: rem(32) 0 rem(8);
+                color: $c-accent;
+                font-size: lineScale(32, 24, 480, 1920);
             }
             h3,
             h4,
             h5,
             h6 {
-                font-size: rem(16);
-                margin: rem(24) 0 rem(8);
+                color: $c-accent;
+                font-size: lineScale(22, 20, 480, 1920);
             }
-
-            p {
-                font-size: rem(14);
-                line-height: 1.3;
-                margin: rem(16) 0 rem(8);
-                > a {
-                    text-decoration: underline;
-                    @media (pointer: fine) {
-                        &:hover {
-                            text-decoration: none;
-                        }
+            ol > li,
+            ul > li {
+                margin-left: rem(20);
+            }
+            ol > li {
+                list-style: decimal outside;
+            }
+            ul > li {
+                list-style: disc outside;
+            }
+            a {
+                color: $c-accent;
+                text-decoration: underline;
+                @media (pointer: fine) {
+                    &:hover {
+                        text-decoration: none;
                     }
                 }
             }

@@ -32,7 +32,11 @@
                         через Telegram, чтобы получить бесплатную консультацию
                     </p>
                     <div class="connection-primary__card-footer">
-                        <button class="connection-primary__card-button" type="button">
+                        <button
+                            class="connection-primary__card-button"
+                            type="button"
+                            @click="openForm"
+                        >
                             <span>Заполнить заявку</span>
                             <span><SvgSprite type="arrow" :size="18" /></span>
                         </button>
@@ -52,7 +56,19 @@
     </section>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+    import { useModal } from 'vue-final-modal';
+    import { ModalsForm } from '#components';
+
+    const { open: openForm, close: closeForm } = useModal({
+        component: ModalsForm,
+        attrs: {
+            onClose() {
+                closeForm();
+            },
+        },
+    });
+</script>
 
 <style scoped lang="scss">
     @use '~/assets/scss/abstracts' as *;

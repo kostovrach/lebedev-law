@@ -276,7 +276,6 @@ export const usePersonsStore = defineStore('persons', () => {
 
     // Actions
     async function getPerson(id: number | string): Promise<IPerson | null> {
-        if (!id) return null;
         const person = persons.value?.find((el) => el.id === id);
         if (!person) return null;
         return person;

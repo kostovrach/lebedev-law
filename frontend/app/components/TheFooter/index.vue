@@ -146,7 +146,7 @@
         {
             label: 'Контакты',
             path: {
-                name: 'index',
+                name: 'contact',
             },
         },
         {
@@ -164,7 +164,7 @@
         {
             label: 'Статьи',
             path: {
-                name: 'index',
+                name: 'blog',
             },
         },
         {
