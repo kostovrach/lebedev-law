@@ -3,7 +3,7 @@
         <div class="services-hero__container">
             <h1 class="services-hero__title">{{ props.title }}</h1>
             <p class="services-hero__subtitle" v-if="props.subtitle">{{ props.subtitle }}</p>
-            <button class="services-hero__button" type="button">
+            <button class="services-hero__button" type="button" @click="openForm">
                 <span>{{ props.buttonText ?? 'Обсудить задачу' }}</span>
                 <span><SvgSprite type="arrow" :size="14" /></span>
             </button>
@@ -15,6 +15,9 @@
 </template>
 
 <script setup lang="ts">
+    import { ModalsForm } from '#components';
+    import { useModal } from 'vue-final-modal';
+
     const props = withDefaults(
         defineProps<{
             title: string;
@@ -29,6 +32,15 @@
             imageUrl: '',
         }
     );
+
+    const { open: openForm, close: closeForm } = useModal({
+        component: ModalsForm,
+        attrs: {
+            onClose() {
+                closeForm();
+            },
+        },
+    });
 </script>
 
 <style scoped lang="scss">

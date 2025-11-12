@@ -1,5 +1,5 @@
 {
-    "name": "project-name",
+    "name": "lebedev-law",
     "type": "module",
     "private": true,
     "scripts": {
@@ -27,9 +27,11 @@
         "embla-carousel-vue": "^8.6.0",
         "eslint": "^9.36.0",
         "fuse.js": "^7.1.0",
+        "matter-js": "^0.20.0",
         "nuxt": "^4.1.2",
         "nuxt-svg-sprite-icon": "^2.0.1",
         "pinia": "^3.0.3",
+        "poly-decomp": "^0.3.0",
         "primevue": "^4.4.1",
         "vite": "^7.1.7",
         "vue": "^3.5.22",
@@ -39,6 +41,7 @@
     "devDependencies": {
         "@nuxt/types": "^2.18.1",
         "@nuxt/typescript-build": "^3.0.2",
+        "@types/matter-js": "^0.20.2",
         "@vue/eslint-config-prettier": "^10.2.0",
         "@yandex/ymaps3-types": "^1.0.17818622",
         "eslint-config-prettier": "^10.1.8",

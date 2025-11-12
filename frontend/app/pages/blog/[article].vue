@@ -313,13 +313,16 @@
             &-controls {
                 display: flex;
                 align-items: center;
+                flex-wrap: wrap;
                 gap: rem(8);
                 margin-top: rem(64);
             }
             &-button {
+                flex: 1;
                 cursor: pointer;
                 position: relative;
                 box-sizing: border-box;
+                white-space: nowrap;
                 width: 100%;
                 display: flex;
                 align-items: center;
@@ -356,9 +359,11 @@
                 }
             }
             &-link {
+                flex: 1;
                 cursor: pointer;
                 position: relative;
                 box-sizing: border-box;
+                white-space: nowrap;
                 width: 100%;
                 display: flex;
                 align-items: center;

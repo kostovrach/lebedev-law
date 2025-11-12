@@ -4,6 +4,7 @@
 
 // layout
 @mixin content-container($max-width: rem(1920), $padding: 0 $px) {
+    width: 100%;
     max-width: $max-width;
     margin: 0 auto;
     padding: $padding;

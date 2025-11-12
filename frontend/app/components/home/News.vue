@@ -1,7 +1,7 @@
 <template>
     <ContentBlock class="home-news" :title="props.title" :tag="props.tag">
         <template #link>
-            <NuxtLink class="home-news__link" :to="{ name: 'index' }">
+            <NuxtLink class="home-news__link" :to="{ name: 'blog' }">
                 <span>Все направления деятельности</span>
                 <span><SvgSprite type="arrow" :size="12" /></span>
             </NuxtLink>
@@ -116,7 +116,7 @@
             flex: 1 1 rem(380);
             cursor: default;
             background-color: $c-FFFFFF;
-            @include hover-curtain;
+            @include hover-curtain($init-color: $c-EEF1F4);
             &-wrapper {
                 position: relative;
                 z-index: 1;
