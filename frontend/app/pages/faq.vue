@@ -47,16 +47,22 @@
                         </nav>
                     </aside>
                     <div class="faq__content">
-                        <FaqIssueSection
-                            v-for="issue in searchResult"
-                            :key="issue.id"
-                            :id="slugify(issue.title)"
-                            class="faq__issue"
-                            :title="issue.title"
-                            :blocks="
-                                issue.blocks.map((el) => ({ title: el.title, content: el.content }))
-                            "
-                        ></FaqIssueSection>
+                        <template v-if="searchResult?.length">
+                            <FaqIssueSection
+                                v-for="issue in searchResult"
+                                :key="issue.id"
+                                :id="slugify(issue.title)"
+                                class="faq__issue"
+                                :title="issue.title"
+                                :blocks="
+                                    issue.blocks.map((el) => ({
+                                        title: el.title,
+                                        content: el.content,
+                                    }))
+                                "
+                            ></FaqIssueSection>
+                        </template>
+                        <SearchError v-else />
                     </div>
                 </article>
             </div>

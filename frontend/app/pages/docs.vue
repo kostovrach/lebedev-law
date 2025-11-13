@@ -48,7 +48,7 @@
                         </label>
                     </div>
                 </div>
-                <ul class="docs__body">
+                <ul class="docs__body" v-if="searchResult?.length">
                     <li
                         v-for="item in searchResult"
                         :key="item.id"
@@ -77,6 +77,7 @@
                         </div>
                     </li>
                 </ul>
+                <SearchError v-else />
             </div>
         </section>
     </NuxtLayout>
