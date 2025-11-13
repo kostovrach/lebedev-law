@@ -5,7 +5,7 @@
                 <div class="map-primary__body">
                     <div class="map-primary__titlebox">
                         <h2 class="map-primary__title">{{ props.title }}</h2>
-                        <NuxtLink class="map-primary__link" :to="{ name: 'index' }">
+                        <NuxtLink class="map-primary__link" :to="{ name: 'contact' }">
                             <span>Все города с нашими представительствами</span>
                             <span><SvgSprite type="arrow" :size="16" /></span>
                         </NuxtLink>

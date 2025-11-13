@@ -1,7 +1,7 @@
 <template>
     <ContentBlock class="home-services" :title="props.title" :tag="props.tag">
         <template #link>
-            <NuxtLink class="home-services__link" :to="{ name: 'index' }">
+            <NuxtLink class="home-services__link" :to="{ name: 'services' }">
                 <span>Все направления деятельности</span>
                 <span><SvgSprite type="arrow" :size="16" /></span>
             </NuxtLink>
@@ -11,7 +11,11 @@
                 class="home-services__item"
                 v-for="(card, idx) in tempCards"
                 :key="idx"
-                :to="{ name: 'index' }"
+                :to="{
+                    name: 'blog-article',
+                    params: { article: slugify('example-article') },
+                    query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
+                }"
             >
                 <picture class="home-services__item-image-container">
                     <img

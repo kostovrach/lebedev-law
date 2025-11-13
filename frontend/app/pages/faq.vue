@@ -43,6 +43,7 @@
                                 <span>
                                     {{ chip.title }}
                                 </span>
+                                <span><SvgSprite type="arrow" :size="16" /></span>
                             </a>
                         </nav>
                     </aside>
@@ -53,6 +54,7 @@
                                 :key="issue.id"
                                 :id="slugify(issue.title)"
                                 class="faq__issue"
+                                :is-search="inputModel ? true : false"
                                 :title="issue.title"
                                 :blocks="
                                     issue.blocks.map((el) => ({
@@ -138,7 +140,15 @@
             gap: rem(8);
             max-width: 110ch;
             &-item {
-                @include chip;
+                display: flex;
+                align-items: center;
+                gap: rem(4);
+                border: rem(1) solid rgba($c-text, 0.25);
+                @include chip($font-size: lineScale(20, 18, 480, 1920));
+                > span > svg {
+                    rotate: 45deg;
+                    translate: 0 rem(3);
+                }
             }
         }
         &__content {

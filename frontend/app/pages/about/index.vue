@@ -1,5 +1,5 @@
 <template>
-    <NuxtLayout>
+    <NuxtLayout name="fill-header">
         <section class="about-hero">
             <picture class="about-hero__cover-container">
                 <img class="about-hero__cover" src="/img/temp/temp.jpg" alt="#" />

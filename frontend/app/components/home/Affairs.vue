@@ -31,7 +31,14 @@
                             <div class="home-affairs__slide-desc" v-if="slide.description">
                                 {{ slide.description }}
                             </div>
-                            <NuxtLink class="home-affairs__slide-button" :to="{ name: 'index' }">
+                            <NuxtLink
+                                class="home-affairs__slide-button"
+                                :to="{
+                                    name: 'blog-article',
+                                    params: { article: slugify('example-article') },
+                                    query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
+                                }"
+                            >
                                 <span>Читать далее</span>
                                 <span><SvgSprite type="arrow" :size="16" /></span>
                             </NuxtLink>
@@ -53,7 +60,7 @@
                                     <span><SvgSprite type="arrow" :size="24" /></span>
                                 </button>
                             </div>
-                            <NuxtLink class="home-affairs__slide-link" :to="{ name: 'index' }">
+                            <NuxtLink class="home-affairs__slide-link" :to="{ name: 'cases' }">
                                 <span>Все дела</span>
                                 <span><SvgSprite type="arrow" :size="12" /></span>
                             </NuxtLink>

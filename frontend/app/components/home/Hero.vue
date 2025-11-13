@@ -8,7 +8,14 @@
                     всей России.
                 </p>
             </div>
-            <NuxtLink class="home-hero__footer" :to="{ name: 'index' }">
+            <NuxtLink
+                class="home-hero__footer"
+                :to="{
+                    name: 'blog-article',
+                    params: { article: slugify('example-article') },
+                    query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
+                }"
+            >
                 <div class="home-hero__footer-wrapper">
                     <div class="home-hero__footer-body">
                         <p class="home-hero__footer-desc">
@@ -37,8 +44,6 @@
                 overflow="visible"
                 fade
                 :options="{ loop: true }"
-                autoplay-enable
-                :autoplay="{ delay: autoplayDelay }"
             >
                 <EmblaSlide
                     class="home-hero__slide"
@@ -58,33 +63,26 @@
                             />
                         </picture>
                         <div class="home-hero__slide-titlebox">
-                            <ClientOnly>
-                                <div
-                                    class="home-hero__slide-progress"
-                                    :style="`--progress: ${Math.round(progress)}%`"
-                                >
-                                    <svg viewBox="0 0 42 42">
-                                        <circle
-                                            class="home-hero__slide-progress-bg"
-                                            :cx="20"
-                                            :cy="20"
-                                            :r="radius"
-                                        />
-                                        <circle
-                                            class="home-hero__slide-progress-inner"
-                                            :cx="20"
-                                            :cy="20"
-                                            :r="radius"
-                                            :stroke-dasharray="circumference"
-                                            :stroke-dashoffset="dashOffset"
-                                        />
-                                    </svg>
-                                </div>
-                            </ClientOnly>
                             <h2 class="home-hero__slide-title">{{ slide.title }}</h2>
                             <p class="home-hero__slide-desc" v-if="slide.description">
                                 {{ slide.description }}
                             </p>
+                            <div class="home-hero__slide-nav" v-if="tempSlides.length > 1">
+                                <button
+                                    class="home-hero__slide-button home-hero__slide-button--prev"
+                                    type="button"
+                                    @click="scrollPrev"
+                                >
+                                    <SvgSprite type="arrow" :size="24" />
+                                </button>
+                                <button
+                                    class="home-hero__slide-button home-hero__slide-button--next"
+                                    type="button"
+                                    @click="scrollNext"
+                                >
+                                    <SvgSprite type="arrow" :size="24" />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </EmblaSlide>
@@ -132,87 +130,8 @@
     // slider ===============================================
     const sliderRef = ref<{ emblaApi: EmblaCarouselType | null } | null>(null);
 
-    const autoplayDelay = 10000;
-    const progress = ref(0);
-
-    let frameId: number | null = null;
-    let startTime = 0;
-    let timeUntilNext = autoplayDelay;
-
-    // progress-spiner-------
-    const radius = 16;
-    const circumference = 2 * Math.PI * radius;
-    const dashOffset = computed(() => circumference - (progress.value / 100) * circumference);
-    // ----------------------
-
-    // const autoplayStop = () => sliderApi?.plugins().autoplay.stop();
-    // const autoplayStart = () => sliderApi?.plugins().autoplay.play();
-
-    const updateProgress = () => {
-        const elapsed = performance.now() - startTime;
-        const percent = Math.min(elapsed / timeUntilNext, 1);
-        progress.value = percent * 100;
-        frameId = requestAnimationFrame(updateProgress);
-    };
-
-    onMounted(() => {
-        const init = () => {
-            const embla = sliderRef.value?.emblaApi;
-            if (!embla) return requestAnimationFrame(init);
-
-            const autoplay = embla.plugins()?.autoplay;
-            if (!autoplay) return requestAnimationFrame(init);
-
-            let isRunning = false;
-
-            const updateFromTimer = () => {
-                timeUntilNext = autoplay.timeUntilNext() || autoplayDelay;
-                startTime = performance.now();
-                progress.value = 0;
-            };
-
-            const startLoop = () => {
-                if (isRunning) return;
-                isRunning = true;
-                frameId = requestAnimationFrame(loop);
-            };
-
-            const stopLoop = () => {
-                if (frameId) cancelAnimationFrame(frameId);
-                frameId = null;
-                isRunning = false;
-            };
-
-            const loop = () => {
-                const elapsed = performance.now() - startTime;
-                const percent = Math.min(elapsed / timeUntilNext, 1);
-                progress.value = percent * 100;
-                frameId = requestAnimationFrame(loop);
-            };
-
-            embla
-                .on('autoplay:timerset', () => {
-                    updateFromTimer();
-                    startLoop();
-                })
-                .on('autoplay:timerstopped', stopLoop)
-                .on('select', updateFromTimer)
-                .on('reInit', () => {
-                    stopLoop();
-                    updateFromTimer();
-                    startLoop();
-                });
-
-            updateFromTimer();
-            startLoop();
-        };
-
-        init();
-    });
-
-    onBeforeUnmount(() => {
-        if (frameId) cancelAnimationFrame(frameId);
-    });
+    const scrollPrev = () => sliderRef.value?.emblaApi?.scrollPrev();
+    const scrollNext = () => sliderRef.value?.emblaApi?.scrollNext();
     // ======================================================
 </script>
 
@@ -383,28 +302,17 @@
                 translate: rem(-64) 0;
                 overflow: visible;
             }
-            &-progress {
-                width: rem(24);
-                aspect-ratio: 1;
+            &-nav {
                 display: flex;
                 align-items: center;
-                justify-content: center;
-                svg {
-                    width: 100%;
-                    height: 100%;
-                    rotate: -90deg;
-                }
-                &-bg {
-                    fill: none;
-                    stroke-width: 3;
-                }
-                &-inner {
-                    fill: none;
-                    stroke: $c-1C5771-025;
-                    stroke-width: 6;
-                    stroke-linecap: round;
-                    will-change: stroke-dashoffset;
-                    transition: stroke-dashoffset 0.1s linear;
+                gap: rem(16);
+                margin-top: rem(16);
+            }
+            &-button {
+                cursor: pointer;
+                pointer-events: auto;
+                &--prev {
+                    transform: scaleX(-1);
                 }
             }
         }

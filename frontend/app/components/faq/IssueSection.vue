@@ -3,34 +3,55 @@
         <div class="faq-issue__titlebox">
             <h2 class="faq-issue__title">{{ props.title }}</h2>
         </div>
-        <ul class="faq-issue__body">
-            <li
-                v-for="(item, idx) in props.blocks"
-                :key="idx"
-                :class="['faq-issue__item', { active: activeIdx === idx }]"
-            >
-                <div class="faq-issue__item-wrapper">
-                    <button class="faq-issue__item-head" type="button" @click="setActiveIdx(idx)">
-                        <h3 class="faq-issue__item-title">{{ item.title }}</h3>
-                        <span class="faq-issue__item-icon"></span>
-                    </button>
-                    <div ref="spoilerContentRefs" class="faq-issue__item-body" v-show="isClient">
-                        <div class="faq-issue__item-content" v-html="item.content"></div>
-                        <NuxtLink
-                            class="faq-issue__item-link"
-                            :to="{
-                                name: 'blog-article',
-                                params: { article: slugify('example-article') },
-                                query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
-                            }"
+        <div class="faq-issue__body">
+            <ul class="faq-issue__list">
+                <li
+                    v-for="(item, idx) in !props.isSearch && hideBlocks
+                        ? props.blocks.slice(0, 2)
+                        : props.blocks"
+                    :key="idx"
+                    :class="['faq-issue__item', { active: activeIdx === idx }]"
+                >
+                    <div class="faq-issue__item-wrapper">
+                        <button
+                            class="faq-issue__item-head"
+                            type="button"
+                            @click="setActiveIdx(idx)"
                         >
-                            <span>Подробнее в статье</span>
-                            <span><SvgSprite type="arrow" :size="14" /></span>
-                        </NuxtLink>
+                            <h3 class="faq-issue__item-title">{{ item.title }}</h3>
+                            <span class="faq-issue__item-icon"></span>
+                        </button>
+                        <div
+                            ref="spoilerContentRefs"
+                            class="faq-issue__item-body"
+                            v-show="isClient"
+                        >
+                            <div class="faq-issue__item-content" v-html="item.content"></div>
+                            <NuxtLink
+                                class="faq-issue__item-link"
+                                :to="{
+                                    name: 'blog-article',
+                                    params: { article: slugify('example-article') },
+                                    query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
+                                }"
+                            >
+                                <span>Подробнее в статье</span>
+                                <span><SvgSprite type="arrow" :size="14" /></span>
+                            </NuxtLink>
+                        </div>
                     </div>
-                </div>
-            </li>
-        </ul>
+                </li>
+            </ul>
+            <button
+                class="faq-issue__button"
+                type="button"
+                v-if="!props.isSearch && hideBlocks"
+                @click="hideBlocks = false"
+            >
+                <span>Показать все</span>
+                <span><SvgSprite type="arrow" :size="18" /></span>
+            </button>
+        </div>
     </section>
 </template>
 
@@ -43,10 +64,12 @@
                 content: string;
                 articleId?: string | number;
             }[];
+            isSearch?: boolean;
         }>(),
         {
             title: '',
             blocks: () => [],
+            isSearch: false,
         }
     );
 
@@ -55,6 +78,15 @@
     const spoilerContentRefs = ref<HTMLElement[]>([]);
     const heightsCache = new WeakMap<HTMLElement, number>();
     const activeIdx = ref<number | null>(null);
+
+    const hideBlocks = ref(true);
+
+    watch(
+        () => props.isSearch,
+        () => {
+            hideBlocks.value = true;
+        }
+    );
 
     const setActiveIdx = (idx: number): void => {
         idx === activeIdx.value ? (activeIdx.value = null) : (activeIdx.value = idx);
@@ -103,6 +135,18 @@
             position: sticky;
             top: rem(128);
             font-size: lineScale(48, 32, 480, 1920);
+        }
+        &__body {
+            display: flex;
+            flex-direction: column;
+            gap: rem(32);
+        }
+        &__button {
+            align-self: center;
+            @include link-primary;
+            > span:has(svg) {
+                rotate: 45deg;
+            }
         }
         &__item {
             position: relative;

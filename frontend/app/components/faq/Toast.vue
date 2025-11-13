@@ -42,14 +42,15 @@
     .faq-toast {
         position: fixed;
         z-index: 10;
-        left: lineScale(32, 16, 480, 1920);
-        bottom: lineScale(32, 16, 480, 1920);
-        width: 100%;
+        left: lineScale(32, 8, 480, 1920);
+        bottom: lineScale(32, 8, 480, 1920);
+        width: calc(100% - rem(16));
         max-width: rem(640);
         color: $c-FFFFFF;
         background-color: $c-0C374B;
         padding: lineScale(32, 16, 480, 1920);
         translate: 0 100%;
+        box-sizing: border-box;
         opacity: 0;
         pointer-events: none;
         transition: all $td $tf;
@@ -71,21 +72,26 @@
             }
         }
         &__title {
+            max-width: 90%;
             font-size: lineScale(32, 20, 480, 1920);
         }
         &__text {
+            max-width: 90%;
             font-size: rem(14);
             line-height: 1.3;
             margin-top: rem(16);
         }
         &__controls {
             display: flex;
+            flex-wrap: wrap;
             gap: rem(8);
             font-size: rem(14);
             margin-top: rem(32);
         }
 
         &__button {
+            flex: 1;
+            white-space: nowrap;
             cursor: pointer;
             position: relative;
             box-sizing: border-box;
@@ -124,6 +130,8 @@
             }
         }
         &__link {
+            flex: 1;
+            white-space: nowrap;
             cursor: pointer;
             position: relative;
             box-sizing: border-box;

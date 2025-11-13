@@ -2,12 +2,21 @@
     <ContentBlock class="home-news" :title="props.title" :tag="props.tag">
         <template #link>
             <NuxtLink class="home-news__link" :to="{ name: 'blog' }">
-                <span>Все направления деятельности</span>
+                <span>Все статьи</span>
                 <span><SvgSprite type="arrow" :size="12" /></span>
             </NuxtLink>
         </template>
-        <ul class="home-news__list">
-            <li class="home-news__item" v-for="(article, idx) in tempArticles" :key="idx">
+        <div class="home-news__list">
+            <NuxtLink
+                class="home-news__item"
+                v-for="(article, idx) in tempArticles"
+                :key="idx"
+                :to="{
+                    name: 'blog-article',
+                    params: { article: slugify('example-article') },
+                    query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
+                }"
+            >
                 <div class="home-news__item-wrapper">
                     <div class="home-news__item-head">
                         <span class="home-news__item-date">
@@ -19,14 +28,14 @@
                         <p class="home-news__item-desc">{{ article.content }}</p>
                     </div>
                     <div class="home-news__item-footer">
-                        <NuxtLink class="home-news__item-button" :to="{ name: 'index' }">
+                        <div class="home-news__item-button">
                             <span>Читать</span>
                             <span><SvgSprite type="arrow" :size="14" /></span>
-                        </NuxtLink>
+                        </div>
                     </div>
                 </div>
-            </li>
-        </ul>
+            </NuxtLink>
+        </div>
     </ContentBlock>
 </template>
 
@@ -114,7 +123,7 @@
         }
         &__item {
             flex: 1 1 rem(380);
-            cursor: default;
+            cursor: pointer;
             background-color: $c-FFFFFF;
             @include hover-curtain($init-color: $c-EEF1F4);
             &-wrapper {

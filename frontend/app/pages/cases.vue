@@ -38,11 +38,11 @@
                         </button>
                     </div>
                 </div>
-                <ul v-liquid-fill class="cases__body">
+                <ul class="cases__body">
                     <li
                         v-for="(article, idx) in tempArticles"
                         :key="article.id"
-                        :class="['cases__item liquid-item', { active: activeIdx == idx }]"
+                        :class="['cases__item', { active: activeIdx == idx }]"
                         v-show="
                             article.tags.some((el) => slugify(el) === activeFilter) ||
                             activeFilter === DEFAULT_FILTER
@@ -538,7 +538,6 @@
         $p: &;
 
         @include content-block($margin: rem(96));
-        @include liquid-fill();
         &__head {
             display: flex;
             flex-direction: column;
@@ -592,14 +591,15 @@
             position: relative;
             border-bottom: rem(1) solid $c-1C5771-025;
             transition: background-color $td $tf;
-            @media (pointer: fine) {
-                &:hover {
-                    color: $c-FFFFFF;
-                }
-            }
+            @include hover-curtain(
+                $polygon: polygon(100% 0%, 95% 100%, 0% 100%, 0% 0%),
+                $init-translate: -99%
+            );
             &.active {
                 color: $c-FFFFFF;
-                background-color: $c-0C374B;
+                &::before {
+                    translate: 0 0;
+                }
                 #{$p}__item {
                     &-body {
                         flex-basis: var(--h);

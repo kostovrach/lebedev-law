@@ -114,10 +114,10 @@
     @include arrow-translate;
 }
 
-@mixin chip() {
+@mixin chip($font-size: lineScale(16, 14, 480, 1920)) {
     cursor: pointer;
     width: fit-content;
-    font-size: lineScale(16, 14, 480, 1920);
+    font-size: $font-size;
     padding: rem(6) rem(16);
     border-radius: rem(32);
     text-align: center;

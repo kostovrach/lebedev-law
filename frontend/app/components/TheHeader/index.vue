@@ -1,5 +1,7 @@
 <template>
-    <header :class="['header', { 'header--scroll': isWindowScroll }]">
+    <header
+        :class="['header', { 'header--scroll': isWindowScroll }, { 'header--fill': props.fill }]"
+    >
         <div class="header__container">
             <TheLogo :switch="isWindowScroll" />
             <nav class="header__nav">
@@ -36,6 +38,8 @@
 
     import { ModalsSideMenu } from '#components';
     import { useModal } from 'vue-final-modal';
+
+    const props = withDefaults(defineProps<{ fill?: boolean }>(), { fill: false });
 
     const route = useRoute();
     const { y: scrollY } = useScroll(window);
@@ -117,6 +121,9 @@
         left: 0;
         width: 100%;
         transition: background-color 0.5s $tf;
+        &--fill {
+            background-color: $c-FFFFFF;
+        }
         &--scroll {
             background-color: $c-0C374B;
             color: $c-FFFFFF;
