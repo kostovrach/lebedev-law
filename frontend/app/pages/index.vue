@@ -16,7 +16,55 @@
     </NuxtLayout>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+    import type { IArticle } from '~~/interfaces/article';
+
+    interface IHomePage {
+        id: number | string;
+        date_updated: string | null;
+
+        hero_title: string;
+        hero_subtitle: string | null;
+        hero_main_button_text: string;
+        hero_hint_title: string;
+        hero_hint_description: string;
+        hero_hint_article: {
+            id: string | number;
+            home_id: any;
+            articles_id: IArticle;
+        };
+
+        services_title: string;
+        services_tag: string | null;
+        services_hint_description: string | null;
+        services_hint_title: string | null;
+        services_hint_link: {
+            id: string | number;
+            home_id: any;
+            articles_id: IArticle;
+        };
+        services_hint_visible: boolean;
+
+        advant_title: string;
+        advant_image: string | null;
+        advant_image_url?: string;
+        advant_blocks: {
+            title: string;
+            content: string;
+        }[];
+
+        affairs_tag: string | null;
+        affairs_title: string;
+
+        news_tag: string | null;
+        news_title: string;
+        news_cards: {
+            id: string | number;
+            home_id: any;
+            articles_id: IArticle;
+        }[];
+    }
+</script>
 
 <style scoped lang="scss">
     @use '~/assets/scss/abstracts' as *;

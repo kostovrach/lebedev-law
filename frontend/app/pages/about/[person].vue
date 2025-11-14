@@ -225,6 +225,7 @@
     import type { IPerson } from '~~/interfaces/person';
 
     const route = useRoute();
+    const router = useRouter();
 
     const { content: partners } = useCms<IPerson[]>('partners', [
         'articles.*',

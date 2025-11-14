@@ -113,6 +113,19 @@
     const route = useRoute();
     const router = useRouter();
 
+    const currentArticleId = route.query.id;
+
+    const { content: articles } = useCms<IArticle[]>('articles');
+
+    const article = computed(() => articles.value?.find((el) => el.id === currentArticleId));
+
+    const suggest = computed(() =>
+        articles.value?.filter((el) => el.id !== currentArticleId).slice(0, 3)
+    );
+
+    const articleRef = ref<HTMLElement | null>(null);
+    const headers = ref<string[]>([]);
+
     const { open: openForm, close: closeForm } = useModal({
         component: ModalsForm,
         attrs: {
@@ -122,8 +135,6 @@
         },
     });
 
-    const currentArticleId = route.query.id;
-
     const goBack = () => {
         if (window.history.length > 1) {
             router.back();
@@ -132,24 +143,16 @@
         }
     };
 
-    const { content: articles } = useCms<IArticle[]>('articles');
-
-    const article = computed(() => articles.value?.find((el) => el.id === currentArticleId));
-    const suggest = computed(() =>
-        articles.value?.filter((el) => el.id !== currentArticleId).slice(0, 3)
-    );
-
-    const articleRef = ref<HTMLElement | null>(null);
-    const headers = ref<string[]>([]);
-
     onMounted(async () => {
         await nextTick();
 
-        if (!articleRef) return;
-        const h2 = articleRef.value?.querySelectorAll('h2');
+        setTimeout(() => {
+            if (!articleRef) return;
+            const h2 = articleRef.value?.querySelectorAll('h2');
 
-        h2?.forEach((el, idx) => el.setAttribute('id', `target-${slugify(idx)}`));
-        headers.value = Array.from(h2 ?? []).flatMap((el) => el.textContent);
+            h2?.forEach((el, idx) => el.setAttribute('id', `target-${slugify(idx)}`));
+            headers.value = Array.from(h2 ?? []).flatMap((el) => el.textContent);
+        }, 300);
     });
 </script>
 

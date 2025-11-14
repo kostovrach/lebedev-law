@@ -113,6 +113,7 @@
         main_partner: IPerson;
         list_tag: string | null;
         list_title: string;
+        page_enabled: boolean;
     }
 
     const { content: page } = useCms<ITeamPage>('team', ['main_partner.*']);

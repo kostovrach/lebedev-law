@@ -22,11 +22,12 @@
                     >
                         <div class="services-list__item-content" v-html="item.content"></div>
                         <NuxtLink
+                            v-if="item.articleId"
                             class="services-list__item-link"
                             :to="{
                                 name: 'blog-article',
-                                params: { article: slugify('example-article') },
-                                query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
+                                params: { article: slugify(item.articleId?.title) },
+                                query: { id: item.articleId.id },
                             }"
                         >
                             <span>Подробнее</span>
@@ -47,7 +48,10 @@
             data: {
                 title: string;
                 content: string;
-                articleId?: string;
+                articleId?: {
+                    id: number | string;
+                    title: string;
+                };
             }[];
         }>(),
         {
@@ -67,9 +71,11 @@
     onMounted(async () => {
         await nextTick();
 
-        spoilerContentRefs.value.forEach((el) =>
-            el.style.setProperty('--h', `${el.offsetHeight}px`)
-        );
+        setTimeout(() => {
+            spoilerContentRefs.value.forEach((el) =>
+                el.style.setProperty('--h', `${el.offsetHeight}px`)
+            );
+        }, 100);
     });
 </script>
 
