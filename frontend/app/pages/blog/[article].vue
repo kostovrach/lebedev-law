@@ -7,14 +7,14 @@
                         <span class="article__tag">
                             {{ normalizeDate(article?.date_created, false) }}
                         </span>
-                        <h1 class="article__title">{{ article.title }}</h1>
+                        <h1 class="article__title">{{ article?.title }}</h1>
                         <NuxtLink class="article__back-link" to="/blog" @click.prevent="goBack">
                             <span><SvgSprite type="arrow" :size="14" /></span>
                             <span>Назад</span>
                         </NuxtLink>
                         <ul class="article__chips">
                             <li
-                                v-for="(chip, idx) in article.tags"
+                                v-for="(chip, idx) in article?.tags"
                                 :key="idx"
                                 class="article__chips-item"
                             >
@@ -35,16 +35,16 @@
                     </div>
                 </header>
                 <section class="article__body">
-                    <picture class="article__cover-container" v-if="article.coverUrl">
+                    <picture class="article__cover-container" v-if="article?.image_url">
                         <img
                             class="article__cover"
-                            :src="article.coverUrl"
-                            :alt="article.title ?? '#'"
+                            :src="article?.image_url"
+                            :alt="article?.title ?? '#'"
                         />
                     </picture>
-                    <p class="article__summary" v-if="article.summary">{{ article.summary }}</p>
-                    <div ref="articleRef" class="article__content" v-html="article.content"></div>
-                    <aside class="article__hint">
+                    <p class="article__summary" v-if="article?.summary">{{ article?.summary }}</p>
+                    <div ref="articleRef" class="article__content" v-html="article?.content"></div>
+                    <aside class="article__hint" v-if="article.hint">
                         <p class="article__hint-title">Попали в похожую ситуацию?</p>
                         <p class="article__hint-text">
                             Заполните заявку на сайте с описанием Вашей ситуации или свяжитесь с
@@ -68,7 +68,7 @@
                     </aside>
                 </section>
             </div>
-            <footer class="article__suggest">
+            <footer class="article__suggest" v-if="suggest?.length">
                 <div class="article__suggest-container">
                     <p class="article__suggest-title">Рекомендуем к прочтению</p>
                     <div class="article__suggest-list">
@@ -108,6 +108,7 @@
 <script setup lang="ts">
     import { useModal } from 'vue-final-modal';
     import { ModalsForm } from '#components';
+    import type { IArticle } from '~~/interfaces/article';
 
     const route = useRoute();
     const router = useRouter();
@@ -131,11 +132,12 @@
         }
     };
 
-    const blogStore = useBlogStore();
+    const { content: articles } = useCms<IArticle[]>('articles');
 
-    const { articles } = blogStore;
-    const article = await blogStore.getArticle(currentArticleId as string);
-    const suggest = articles?.filter((el) => el.id !== currentArticleId).slice(0, 3);
+    const article = computed(() => articles.value?.find((el) => el.id === currentArticleId));
+    const suggest = computed(() =>
+        articles.value?.filter((el) => el.id !== currentArticleId).slice(0, 3)
+    );
 
     const articleRef = ref<HTMLElement | null>(null);
     const headers = ref<string[]>([]);
@@ -284,6 +286,8 @@
             img {
                 width: 100%;
                 height: rem(240);
+                object-fit: cover;
+                margin-top: rem(32);
             }
             a {
                 text-decoration: underline;
