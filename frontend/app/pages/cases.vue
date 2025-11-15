@@ -161,7 +161,9 @@
     const route = useRoute();
 
     const chips = computed(() => [
-        ...new Set(page.value?.articles.flatMap((el) => el.articles_id.tags)),
+        ...new Set(
+            page.value?.articles.flatMap((el) => el.articles_id.tags.map((i) => i.toLowerCase()))
+        ),
     ]);
 
     const DEFAULT_FILTER = 'all';
@@ -192,7 +194,7 @@
                 heightsCache.set(el, height);
                 el.style.setProperty('--h', `${height}px`);
             });
-        }, 100);
+        }, 300);
     });
 
     onUpdated(async () => {
@@ -209,7 +211,7 @@
                     el.style.setProperty('--h', `${height}px`);
                 }
             });
-        }, 100);
+        }, 300);
     });
 </script>
 

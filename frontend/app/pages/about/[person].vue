@@ -54,7 +54,7 @@
                                         <div class="person-view__section-slide-titlebox">
                                             <span class="person-view__section-slide-tag">
                                                 {{
-                                                    `.${slide.directus_files_id.type.split('/')[1]}`
+                                                    normalizeFileType(slide.directus_files_id.type)
                                                 }}
                                             </span>
                                             <h3
@@ -67,7 +67,8 @@
                                         <a
                                             class="person-view__section-slide-button"
                                             :data-type="
-                                                slide.directus_files_id.type.split('/')[1] === 'pdf'
+                                                normalizeFileType(slide.directus_files_id.type) ===
+                                                '.pdf'
                                                     ? 'pdf'
                                                     : ''
                                             "

@@ -129,20 +129,6 @@ export const useIssuesStore = defineStore('issues', () => {
         fuse.value = new Fuse(list, fuseOptions);
     }
 
-    watch(
-        issuesList,
-        (newList) => {
-            if (!newList?.length) {
-                fuse.value = null;
-                return;
-            }
-            import('fuse.js').then(({ default: Fuse }) => {
-                fuse.value = new Fuse(newList, fuseOptions);
-            });
-        },
-        { immediate: false }
-    );
-
     async function searchIssueFuzzy(query: string): Promise<IFaqIssue[]> {
         const list = issuesList.value ?? [];
         if (!query.trim()) return list;

@@ -94,7 +94,9 @@
     const { content: articles } = useCms<IArticle[]>('articles');
     const { content: page } = useCms<IBlogPage>('blog');
 
-    const articleAttrs = computed(() => [...new Set(articles.value?.flatMap((el) => el.tags))]);
+    const articleAttrs = computed(() => [
+        ...new Set(articles.value?.flatMap((el) => el.tags.map((i) => i.toLowerCase()))),
+    ]);
 
     const DEFAULT_FILTER = 'all';
     const activeFilter = ref<string>(DEFAULT_FILTER);

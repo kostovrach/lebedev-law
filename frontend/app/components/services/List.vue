@@ -75,7 +75,7 @@
             spoilerContentRefs.value.forEach((el) =>
                 el.style.setProperty('--h', `${el.offsetHeight}px`)
             );
-        }, 100);
+        }, 300);
     });
 </script>
 
