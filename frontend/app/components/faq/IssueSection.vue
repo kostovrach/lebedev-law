@@ -28,11 +28,12 @@
                         >
                             <div class="faq-issue__item-content" v-html="item.content"></div>
                             <NuxtLink
+                                v-if="item.article"
                                 class="faq-issue__item-link"
                                 :to="{
                                     name: 'blog-article',
-                                    params: { article: slugify('example-article') },
-                                    query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
+                                    params: { article: slugify(item.title) },
+                                    query: { id: item.article },
                                 }"
                             >
                                 <span>Подробнее в статье</span>
@@ -45,7 +46,7 @@
             <button
                 class="faq-issue__button"
                 type="button"
-                v-if="!props.isSearch && hideBlocks"
+                v-if="!props.isSearch && hideBlocks && props.blocks.length > 2"
                 @click="hideBlocks = false"
             >
                 <span>Показать все</span>
@@ -62,7 +63,7 @@
             blocks: {
                 title: string;
                 content: string;
-                articleId?: string | number;
+                article?: string | number;
             }[];
             isSearch?: boolean;
         }>(),
@@ -126,6 +127,7 @@
 
         display: grid;
         grid-template-columns: 40% auto;
+        gap: rem(64);
         scroll-margin: rem(128);
         &__titlebox {
             position: relative;

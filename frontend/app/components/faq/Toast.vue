@@ -3,11 +3,8 @@
         <button class="faq-toast__close-btn" type="button" @click="isShow = false">
             <SvgSprite type="cross" :size="24" />
         </button>
-        <p class="faq-toast__title">Не нашли ответа на свой вопрос?</p>
-        <p class="faq-toast__text">
-            Заполните заявку на сайте с описанием Вашей ситуации или свяжитесь с нами через
-            Telegram, чтобы получить бесплатную консультацию
-        </p>
+        <p class="faq-toast__title">{{ props.title }}</p>
+        <p class="faq-toast__text">{{ props.description }}</p>
         <div class="faq-toast__controls">
             <button class="faq-toast__button" type="button">
                 <span>Заполнить заявку</span>
@@ -27,6 +24,17 @@
 </template>
 
 <script setup lang="ts">
+    const props = withDefaults(
+        defineProps<{
+            title: string;
+            description: string;
+        }>(),
+        {
+            title: '',
+            description: '',
+        }
+    );
+
     const isShow = ref(false);
 
     onMounted(() => {

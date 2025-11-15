@@ -1,12 +1,24 @@
 <template>
     <div class="action-button">
-        <button class="action-button__button" type="button">
+        <button class="action-button__button" type="button" @click="openForm">
             <span><SvgSprite type="chat" :size="36" /></span>
         </button>
     </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+    import { useModal } from 'vue-final-modal';
+    import { ModalsForm } from '#components';
+
+    const { open: openForm, close: closeForm } = useModal({
+        component: ModalsForm,
+        attrs: {
+            onClose() {
+                closeForm();
+            },
+        },
+    });
+</script>
 
 <style scoped lang="scss">
     @use '~/assets/scss/abstracts' as *;
