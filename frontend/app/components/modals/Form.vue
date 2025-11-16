@@ -11,16 +11,12 @@
                         <SvgSprite type="cross" :size="32" />
                     </button>
 
-                    <p class="modal-form__title">Свяжитесь с нами</p>
-                    <div class="modal-form__desc">
-                        <p>
-                            Мы дадим ответ в течение 24 часов в ближайший рабочий день. Вы также
-                            можете связаться с нами по телефону
-                            <a href="#">+7 999 555-55-35</a>
-                            или почте
-                            <a href="#">zalebedev@gmail.com.</a>
-                        </p>
-                    </div>
+                    <p class="modal-form__title">{{ component?.title ?? 'Свяжитесь с нами' }}</p>
+                    <div
+                        class="modal-form__desc"
+                        v-if="component?.description"
+                        v-html="component.description"
+                    ></div>
                 </div>
                 <form class="modal-form__body">
                     <label class="modal-form__inputbox" for="form-name">
@@ -53,12 +49,31 @@
                     <div class="modal-form__controls">
                         <label class="modal-form__agreement">
                             <div class="modal-form__agreement-checkbox">
-                                <input id="form-agreement" name="form-agreement" type="checkbox" />
+                                <input
+                                    id="form-agreement"
+                                    name="form-agreement"
+                                    type="checkbox"
+                                    required
+                                    checked
+                                />
                             </div>
-                            <span>
-                                Согласен с
-                                <button type="button">политикой конфиденциальности</button>
-                            </span>
+                            <div>
+                                Согласение на обработку персональных данных в соответствии с:
+                                <button
+                                    type="button"
+                                    v-for="policy in policies"
+                                    :key="policy.id"
+                                    @click="
+                                        openDocsModal(
+                                            policy.title,
+                                            policy.date_updated ?? policy.date_created,
+                                            policy.content
+                                        )
+                                    "
+                                >
+                                    {{ policy.title.toLowerCase() }}
+                                </button>
+                            </div>
                         </label>
                         <button class="modal-form__button" type="submit">
                             <span>Отправить</span>
@@ -73,10 +88,40 @@
 
 <script setup lang="ts">
     import { VueFinalModal } from 'vue-final-modal';
+    import type { IPolicy } from '~~/interfaces/policy';
+
+    import { ModalsDocs } from '#components';
+    import { useModal } from 'vue-final-modal';
+
+    interface IForm {
+        id: string | number;
+        date_updated: string | null;
+        title: string;
+        description: string | null;
+    }
+
+    const { content: component } = useCms<IForm>('form');
+    const { content: policies, status: policiesStatus } = useCms<IPolicy[]>('policies');
 
     const emit = defineEmits<{
         (e: 'close'): void;
     }>();
+
+    function openDocsModal(title: string, dateUpdated: string, content: string) {
+        const { open: openModal, close: closeModal } = useModal({
+            component: ModalsDocs,
+            attrs: {
+                title: title,
+                dateUpdated: dateUpdated,
+                content: content,
+                status: policiesStatus.value,
+                onClose() {
+                    closeModal();
+                },
+            },
+        });
+        openModal();
+    }
 </script>
 
 <style scoped lang="scss">

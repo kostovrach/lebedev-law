@@ -74,16 +74,20 @@
         width: 100%;
         max-width: rem(800);
         height: 100lvh;
+        color: $c-FFFFFF;
+        background-color: $c-0C374B;
         overflow-y: auto;
         @include hide-scrollbar;
         &__container {
             display: flex;
             flex-direction: column;
-            padding: rem(32);
+            padding: rem(32) lineScale(32, 16, 480, 1920) lineScale(96, 128, 480, 1920)
+                lineScale(32, 16, 480, 1920);
         }
         &__button {
+            cursor: pointer;
             align-self: flex-end;
-            transition: scale $td $tf-spring;
+            transition: rotate $td $tf-spring;
             @media (pointer: fine) {
                 &:hover {
                     rotate: 90deg;
@@ -101,7 +105,7 @@
         &__tag {
             font-size: lineScale(17, 15, 480, 1920);
             color: $c-accent;
-            opacity: 0.5;
+            opacity: 0.7;
         }
         &__body {
             margin-top: rem(64);
@@ -115,6 +119,7 @@
             h2 {
                 color: $c-accent;
                 font-size: lineScale(32, 24, 480, 1920);
+                margin-top: rem(32);
             }
             h3,
             h4,
@@ -132,6 +137,9 @@
             }
             ul > li {
                 list-style: disc outside;
+            }
+            img {
+                object-fit: cover;
             }
             a {
                 color: $c-accent;

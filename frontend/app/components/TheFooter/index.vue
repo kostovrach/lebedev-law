@@ -1,26 +1,21 @@
 <template>
     <footer class="footer">
         <div class="footer__container">
-            <div class="footer__runline">
+            <div class="footer__runline" v-if="component?.tags && component.tags.length >= 4">
                 <div class="footer__runline-inner" v-for="n in 2" :key="n">
-                    {{ runlineItems.join(' / ') }} /
+                    {{ component.tags.join(' / ') }} /
                 </div>
             </div>
             <div class="footer__body">
                 <div class="footer__label">
                     <TheLogo class="footer__logo" />
-                    <p class="footer__desc">
-                        Команда адвокатов с едиными ценностями и ответственным подходом. Работаем по
-                        всей России.
-                    </p>
+                    <p class="footer__desc" v-if="component?.summary">{{ component?.summary }}</p>
                 </div>
                 <div class="footer__nav">
-                    <ul class="footer__addresses">
+                    <ul class="footer__addresses" v-if="contact?.address">
                         <li class="footer__addresses-item">
                             <span class="footer__addresses-item-title">Головной офис</span>
-                            <p class="footer__addresses-item-text">
-                                443080, г. Самара, пр. Карла Маркса, д. 192, офис 614
-                            </p>
+                            <p class="footer__addresses-item-text">{{ contact.address }}</p>
                         </li>
                     </ul>
                     <nav class="footer__map">
@@ -38,37 +33,41 @@
                 <div class="footer__contact">
                     <a
                         class="footer__contact-item footer__contact-item--tel"
-                        href="tel:"
+                        :href="`tel:${contact?.phone.trim().replace(/\s+/g, '')}`"
                         rel="noopener noreferrer"
                     >
-                        +7 917 151-82-72
+                        {{ contact?.phone }}
                     </a>
                     <a
+                        v-if="contact?.email"
                         class="footer__contact-item footer__contact-item--mail"
-                        href="mailto:"
+                        :href="`mailto:${contact.email.trim().replace(/\s+/g, '')}`"
                         rel="noopener noreferrer"
                     >
-                        lebedev.zakon@gmail.com
+                        {{ contact.email }}
                     </a>
                     <div class="footer__socials">
                         <a
+                            v-if="contact?.vk"
                             class="footer__socials-item"
                             target="_blank"
-                            href="https://example.com"
+                            :href="contact.vk"
                             rel="noopener noreferrer"
                             style="--anim-color: #03a4df; --mask: url(/img/masks/vk.svg)"
                         ></a>
                         <a
+                            v-if="contact?.tg"
                             class="footer__socials-item"
                             target="_blank"
-                            href="https://example.com"
+                            :href="contact.tg"
                             rel="noopener noreferrer"
                             style="--anim-color: #03a4df; --mask: url(/img/masks/telegram.svg)"
                         ></a>
                         <a
+                            v-if="contact?.ok"
                             class="footer__socials-item"
                             target="_blank"
-                            href="https://example.com"
+                            :href="contact.ok"
                             rel="noopener noreferrer"
                             style="--anim-color: #ff7700; --mask: url(/img/masks/ok.svg)"
                         ></a>
@@ -77,11 +76,24 @@
             </div>
             <div class="footer__controls">
                 <span class="footer__copyright">
-                    &copy;Лебедев и партнёры 2025. Все права защищены. 18+
+                    {{ `&copy;${component?.copyright}` }}
                 </span>
                 <div class="footer__docs">
-                    <button class="footer__docs-button" type="button">Конфиденциальность</button>
-                    <button class="footer__docs-button" type="button">Оферта</button>
+                    <button
+                        class="footer__docs-button"
+                        type="button"
+                        v-for="policy in policies"
+                        :key="policy.id"
+                        @click="
+                            openDocsModal(
+                                policy.title,
+                                policy.date_updated ?? policy.date_created,
+                                policy.content
+                            )
+                        "
+                    >
+                        {{ policy.title }}
+                    </button>
                 </div>
                 <a class="footer__anchor" href="#page">
                     <span>Наверх</span>
@@ -107,10 +119,41 @@
 
 <script setup lang="ts">
     import type { RouteParamsRawGeneric } from 'vue-router';
+    import type { IContact } from '~~/interfaces/contact';
+    import type { IPolicy } from '~~/interfaces/policy';
+
+    import { ModalsDocs } from '#components';
+    import { useModal } from 'vue-final-modal';
+
+    interface IFooter {
+        id: string | number;
+        date_updated: string | null;
+        tags: string[] | null;
+        summary: string | null;
+        copyright: string;
+    }
 
     const route = useRoute();
 
-    const runlineItems: string[] = ['команда', 'лебедев', 'юристы', 'защита'];
+    const { content: contact } = useCms<IContact>('contact');
+    const { content: policies, status: policiesStatus } = useCms<IPolicy[]>('policies');
+    const { content: component } = useCms<IFooter>('footer');
+
+    function openDocsModal(title: string, dateUpdated: string, content: string) {
+        const { open: openModal, close: closeModal } = useModal({
+            component: ModalsDocs,
+            attrs: {
+                title: title,
+                dateUpdated: dateUpdated,
+                content: content,
+                status: policiesStatus.value,
+                onClose() {
+                    closeModal();
+                },
+            },
+        });
+        openModal();
+    }
 
     const navItems: {
         label: string;
@@ -135,12 +178,6 @@
             label: 'Услуги',
             path: {
                 name: 'services',
-            },
-        },
-        {
-            label: 'Стоимость',
-            path: {
-                name: 'index',
             },
         },
         {

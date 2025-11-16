@@ -62,15 +62,19 @@
             </nav>
             <div class="header__controls">
                 <a
+                    v-if="contact?.tg"
                     class="header__controls-item"
-                    href="https://example.com"
+                    :href="contact.tg"
                     target="_blank"
                     rel="noopener noreferrer"
                 >
                     <span><SvgSprite type="telegram-plane" :size="22" /></span>
                 </a>
-                <a class="header__controls-item" href="tel:+7(777)777-77-77">
-                    <span>+7 (777) 777-77-77</span>
+                <a
+                    class="header__controls-item"
+                    :href="`tel:${contact?.phone.trim().replace(/\s+/g, '')}`"
+                >
+                    <span>{{ contact?.phone }}</span>
                     <span><SvgSprite type="telephone" :size="22" style="translate: 0 1px" /></span>
                 </a>
                 <TheHeaderBurger class="header__controls-item--burger" @click="openMenu" />
@@ -80,6 +84,10 @@
 </template>
 
 <script setup lang="ts">
+    import { ModalsSideMenu } from '#components';
+    import { useModal } from 'vue-final-modal';
+
+    import type { IContact } from '~~/interfaces/contact';
     import type { IPerson } from '~~/interfaces/person';
 
     interface ITeamPage {
@@ -95,8 +103,10 @@
         page_enabled: boolean;
     }
 
-    import { ModalsSideMenu } from '#components';
-    import { useModal } from 'vue-final-modal';
+    // data ================================================================================
+    const { content: teamPage } = useCms<ITeamPage>('team', ['main_partner.*']);
+    const { content: contact } = useCms<IContact>('contact');
+    // =====================================================================================
 
     const props = withDefaults(defineProps<{ fill?: boolean }>(), { fill: false });
 
@@ -104,8 +114,6 @@
     const { y: scrollY } = useScroll(window);
 
     const isWindowScroll = computed(() => scrollY.value >= 64);
-
-    const { content: teamPage } = useCms<ITeamPage>('team', ['main_partner.*']);
 
     // modals ==============================================================================
     const { open: openMenu, close: closeMenu } = useModal({

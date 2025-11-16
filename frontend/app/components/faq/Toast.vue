@@ -11,8 +11,9 @@
                 <span><SvgSprite type="arrow" :size="18" /></span>
             </button>
             <a
+                v-if="contact?.tg"
                 class="faq-toast__link"
-                href="https://example.com"
+                :href="contact.tg.trim().replace(/\s+/g, '')"
                 target="_blank"
                 rel="noopener noreferrer"
             >
@@ -24,6 +25,8 @@
 </template>
 
 <script setup lang="ts">
+    import type { IContact } from '~~/interfaces/contact';
+
     const props = withDefaults(
         defineProps<{
             title: string;
@@ -34,6 +37,8 @@
             description: '',
         }
     );
+
+    const { content: contact } = useCms<IContact>('contact');
 
     const isShow = ref(false);
 

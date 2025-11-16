@@ -136,7 +136,7 @@
                 </div>
             </div>
         </section>
-        <MapPrimary title="Защищаем ваши права в 25+ городах России" />
+        <MapPrimary />
     </NuxtLayout>
 </template>
 

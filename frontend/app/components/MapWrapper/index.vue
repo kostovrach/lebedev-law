@@ -20,15 +20,13 @@
             <YandexMapControls :settings="{ position: 'left top' }">
                 <YandexMapOpenMapsButton />
             </YandexMapControls>
-            <YandexMapUiMarker
+            <YandexMapDefaultMarker
                 v-for="(marker, idx) in props.markers"
                 :key="idx"
                 :settings="{
                     onClick: () => (markersIdx === idx ? (markersIdx = null) : (markersIdx = idx)),
                     coordinates: marker.coordinates,
                     title: marker.title,
-                    color: 'brightblue',
-                    popup: { show: markersIdx === idx, position: 'bottom right', offset: 10 },
                 }"
             >
                 <template #popup>
@@ -36,7 +34,7 @@
                         {{ marker.body }}
                     </div>
                 </template>
-            </YandexMapUiMarker>
+            </YandexMapDefaultMarker>
             <YandexMapSignpost
                 :settings="{
                     points: markers.map((el) => el.coordinates),
@@ -53,7 +51,7 @@
         YandexMap,
         YandexMapDefaultSchemeLayer,
         YandexMapDefaultFeaturesLayer,
-        YandexMapUiMarker,
+        YandexMapDefaultMarker,
         YandexMapControls,
         YandexMapZoomControl,
         YandexMapSignpost,
@@ -67,7 +65,7 @@
             zoom?: number;
             markers?: {
                 coordinates: LngLat;
-                title: string;
+                title?: string;
                 body?: string;
             }[];
         }>(),

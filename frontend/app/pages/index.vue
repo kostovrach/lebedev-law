@@ -26,7 +26,7 @@
             :data="page?.advant_blocks"
         />
         <HomeAffairs :tag="page?.affairs_tag ?? ''" :title="page?.affairs_title ?? ''" />
-        <MapPrimary title="Защищаем ваши права в 25+ городах России" />
+        <MapPrimary />
         <HomeNews
             :tag="page?.news_tag ?? ''"
             :title="page?.news_title ?? ''"

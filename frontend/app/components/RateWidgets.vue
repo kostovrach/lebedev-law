@@ -1,61 +1,67 @@
 <template>
     <ul class="rate-widgets">
-        <li class="rate-widgets__item">
+        <li
+            class="rate-widgets__item"
+            v-if="props.yandex_rate && props.yandex_count && props.yandex_link"
+        >
             <div class="rate-widgets__item-wrapper">
                 <h3 class="rate-widgets__item-title">Яндекс карты</h3>
                 <a
                     class="rate-widgets__item-counter"
-                    href="https://example.com"
+                    :href="props.yandex_link.trim().replace(/\s+/g, '')"
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    71 отзыв
+                    {{ `${props.yandex_count} отзывов` }}
                 </a>
                 <picture class="rate-widgets__item-image-container">
                     <img class="rate-widgets__item-image" src="/img/company/yandex.svg" alt="#" />
                 </picture>
                 <div class="rate-widgets__item-rate">
-                    <span>5.0</span>
+                    <span>{{ props.yandex_rate }}</span>
                     <SvgSprite type="star" :size="16" />
                 </div>
             </div>
         </li>
-        <li class="rate-widgets__item">
+        <li class="rate-widgets__item" v-if="props.gis_count && props.gis_rate && props.gis_link">
             <div class="rate-widgets__item-wrapper">
                 <h3 class="rate-widgets__item-title">2GIS</h3>
                 <a
                     class="rate-widgets__item-counter"
-                    href="https://example.com"
+                    :href="props.gis_link.trim().replace(/\s+/g, '')"
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    71 отзыв
+                    {{ `${props.gis_count} отзывов` }}
                 </a>
                 <picture class="rate-widgets__item-image-container">
                     <img class="rate-widgets__item-image" src="/img/company/2gis.svg" alt="#" />
                 </picture>
                 <div class="rate-widgets__item-rate">
-                    <span>5.0</span>
+                    <span>{{ props.gis_rate }}</span>
                     <SvgSprite type="star" :size="16" />
                 </div>
             </div>
         </li>
-        <li class="rate-widgets__item">
+        <li
+            class="rate-widgets__item"
+            v-if="props.google_count && props.google_link && props.google_rate"
+        >
             <div class="rate-widgets__item-wrapper">
                 <h3 class="rate-widgets__item-title">Google Карты</h3>
                 <a
                     class="rate-widgets__item-counter"
-                    href="https://example.com"
+                    :href="props.google_link.trim().replace(/\s+/g, '')"
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    71 отзыв
+                    {{ `${props.google_count} отзывов` }}
                 </a>
                 <picture class="rate-widgets__item-image-container">
                     <img class="rate-widgets__item-image" src="/img/company/google.svg" alt="#" />
                 </picture>
                 <div class="rate-widgets__item-rate">
-                    <span>5.0</span>
+                    <span>{{ props.google_rate }}</span>
                     <SvgSprite type="star" :size="16" />
                 </div>
             </div>
@@ -63,7 +69,36 @@
     </ul>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+    const props = withDefaults(
+        defineProps<{
+            yandex_rate?: number | null;
+            yandex_count?: number | null;
+            yandex_link?: string | null;
+
+            google_rate?: number | null;
+            google_count?: number | null;
+            google_link?: string | null;
+
+            gis_rate?: number | null;
+            gis_count?: number | null;
+            gis_link?: string | null;
+        }>(),
+        {
+            yandex_rate: null,
+            yandex_count: null,
+            yandex_link: null,
+
+            google_rate: null,
+            google_count: null,
+            google_link: null,
+
+            gis_rate: null,
+            gis_count: null,
+            gis_link: null,
+        }
+    );
+</script>
 
 <style scoped lang="scss">
     @use '~/assets/scss/abstracts' as *;
