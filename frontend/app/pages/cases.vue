@@ -141,21 +141,8 @@
 </template>
 
 <script setup lang="ts">
-    import type { IArticle } from '~~/interfaces/article';
+    import type { ICasesPage } from '~~/interfaces/cases-page';
 
-    interface ICasesPage {
-        id: string | number;
-        date_updated: string | null;
-        image: string | null;
-        image_url?: string;
-        title: string;
-        subtitle: string | null;
-        articles: {
-            id: string | number;
-            cases_id: any;
-            articles_id: IArticle;
-        }[];
-    }
     const { content: page } = useCms<ICasesPage>('cases', ['articles.*', 'articles.articles_id.*']);
 
     const route = useRoute();

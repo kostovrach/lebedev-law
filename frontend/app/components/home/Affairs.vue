@@ -1,5 +1,10 @@
 <template>
-    <ContentBlock class="home-affairs" :tag="props.tag" :title="props.title">
+    <ContentBlock
+        class="home-affairs"
+        :tag="props.tag"
+        :title="props.title"
+        v-if="cases?.articles.length"
+    >
         <EmblaContainer
             ref="sliderRef"
             class="home-affairs__slider"
@@ -10,7 +15,7 @@
             <EmblaSlide
                 class="home-slider__slide"
                 width="100%"
-                v-for="(slide, idx) in tempSlides"
+                v-for="(slide, idx) in cases?.articles"
                 :key="idx"
             >
                 <div class="home-affairs__slide-wrapper">
@@ -27,16 +32,16 @@
                             </div>
                         </div>
                         <div class="home-affairs__slide-content">
-                            <h3 class="home-affairs__slide-title">{{ slide.title }}</h3>
-                            <div class="home-affairs__slide-desc" v-if="slide.description">
-                                {{ slide.description }}
+                            <h3 class="home-affairs__slide-title">{{ slide.articles_id.title }}</h3>
+                            <div class="home-affairs__slide-desc" v-if="slide.articles_id.summary">
+                                {{ slide.articles_id.summary }}
                             </div>
                             <NuxtLink
                                 class="home-affairs__slide-button"
                                 :to="{
                                     name: 'blog-article',
-                                    params: { article: slugify('example-article') },
-                                    query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
+                                    params: { article: slugify(slide.articles_id.title) },
+                                    query: { id: slide.articles_id.id },
                                 }"
                             >
                                 <span>Читать далее</span>
@@ -69,8 +74,8 @@
                     <picture class="home-affairs__slide-image-container">
                         <img
                             class="home-affairs__slide-image"
-                            :src="slide.imageUrl"
-                            :alt="slide.title ?? '#'"
+                            :src="slide.articles_id.image_url ?? '/img/temp/temp.jpg'"
+                            :alt="slide.articles_id.title ?? '#'"
                         />
                     </picture>
                 </div>
@@ -81,6 +86,7 @@
 
 <script setup lang="ts">
     import type { EmblaCarouselType } from 'embla-carousel';
+    import type { ICasesPage } from '~~/interfaces/cases-page';
 
     const props = withDefaults(
         defineProps<{
@@ -92,6 +98,11 @@
             tag: '',
         }
     );
+
+    const { content: cases } = useCms<ICasesPage>('cases', [
+        'articles.*',
+        'articles.articles_id.*',
+    ]);
 
     // slider =======================================================
     const sliderRef = ref<{ emblaApi: EmblaCarouselType | null } | null>(null);

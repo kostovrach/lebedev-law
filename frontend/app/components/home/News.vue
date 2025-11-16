@@ -1,5 +1,5 @@
 <template>
-    <ContentBlock class="home-news" :title="props.title" :tag="props.tag">
+    <ContentBlock class="home-news" :title="props.title" :tag="props.tag" v-if="props.cards.length">
         <template #link>
             <NuxtLink class="home-news__link" :to="{ name: 'blog' }">
                 <span>Все статьи</span>
@@ -9,23 +9,25 @@
         <div class="home-news__list">
             <NuxtLink
                 class="home-news__item"
-                v-for="(article, idx) in tempArticles"
+                v-for="(article, idx) in props.cards"
                 :key="idx"
                 :to="{
                     name: 'blog-article',
-                    params: { article: slugify('example-article') },
-                    query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
+                    params: { article: slugify(article.title) },
+                    query: { id: article.id },
                 }"
             >
                 <div class="home-news__item-wrapper">
                     <div class="home-news__item-head">
                         <span class="home-news__item-date">
-                            {{ normalizeDate(article.date_updated, false) }}
+                            {{ normalizeDate(article.date_updated ?? article.date_created, false) }}
                         </span>
                     </div>
                     <div class="home-news__item-body">
                         <h3 class="home-news__item-title">{{ article.title }}</h3>
-                        <p class="home-news__item-desc">{{ article.content }}</p>
+                        <p class="home-news__item-desc" v-if="article.summary">
+                            {{ article.summary }}
+                        </p>
                     </div>
                     <div class="home-news__item-footer">
                         <div class="home-news__item-button">
@@ -40,71 +42,20 @@
 </template>
 
 <script setup lang="ts">
+    import type { IArticle } from '~~/interfaces/article';
+
     const props = withDefaults(
         defineProps<{
             title: string;
             tag?: string;
+            cards?: IArticle[];
         }>(),
         {
             title: '',
             tag: '',
+            cards: () => [],
         }
     );
-
-    const tempArticles: {
-        date_updated: string;
-        title: string;
-        content: string;
-    }[] = [
-        {
-            date_updated: '2005-08-09T18:31:42',
-            title: 'Иск о нарушении авторских прав',
-            content:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aperiam incidunt quaerat exercitationem doloremque. Voluptate architecto tempora laudantium ipsum enim sed facilis deserunt labore odit dolorum.',
-        },
-        {
-            date_updated: '2005-08-09T18:31:42',
-            title: 'Судебное разбирательство по патентам',
-            content:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aperiam incidunt quaerat exercitationem doloremque. Voluptate architecto tempora laudantium ipsum enim sed facilis deserunt labore odit dolorum.',
-        },
-        {
-            date_updated: '2005-08-09T18:31:42',
-            title: 'Судебное разбирательство по патентам',
-            content:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aperiam incidunt quaerat exercitationem doloremque. Voluptate architecto tempora laudantium ipsum enim sed facilis deserunt labore odit dolorum.',
-        },
-        {
-            date_updated: '2005-08-09T18:31:42',
-            title: 'Конфликт интересов в бизнесе',
-            content:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aperiam incidunt quaerat exercitationem doloremque. Voluptate architecto tempora laudantium ipsum enim sed facilis deserunt labore odit dolorum.',
-        },
-        {
-            date_updated: '2005-08-09T18:31:42',
-            title: 'Сложные споры по контрактам',
-            content:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aperiam incidunt quaerat exercitationem doloremque. Voluptate architecto tempora laudantium ipsum enim sed facilis deserunt labore odit dolorum.',
-        },
-        {
-            date_updated: '2005-08-09T18:31:42',
-            title: 'Защита прав потребителей',
-            content:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aperiam incidunt quaerat exercitationem doloremque. Voluptate architecto tempora laudantium ipsum enim sed facilis deserunt labore odit dolorum.',
-        },
-        {
-            date_updated: '2005-08-09T18:31:42',
-            title: 'Споры по интеллектуальной собственности',
-            content:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aperiam incidunt quaerat exercitationem doloremque. Voluptate architecto tempora laudantium ipsum enim sed facilis deserunt labore odit dolorum.',
-        },
-        {
-            date_updated: '2005-08-09T18:31:42',
-            title: 'Судебные разбирательства в сфере недвижимости',
-            content:
-                'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aperiam incidunt quaerat exercitationem doloremque. Voluptate architecto tempora laudantium ipsum enim sed facilis deserunt labore odit dolorum.',
-        },
-    ];
 </script>
 
 <style scoped lang="scss">

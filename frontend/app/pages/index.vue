@@ -1,17 +1,37 @@
 <template>
     <NuxtLayout>
-        <HomeHero />
+        <HomeHero
+            :title="page?.hero_title ?? ''"
+            :subtitle="page?.hero_subtitle ?? ''"
+            :button-text="page?.hero_main_button_text"
+            :hint="{
+                title: page?.hero_hint_title ?? '',
+                desc: page?.hero_hint_description ?? '',
+                article: page?.hero_hint_article,
+            }"
+        />
         <HomeServeces
-            title="Мы оказываем услуги в наиболее востребованных областях права"
-            tag="Услуги"
+            :title="page?.services_title ?? ''"
+            :tag="page?.services_tag ?? ''"
+            :hint="{
+                title: page?.services_hint_title ?? '',
+                description: page?.services_hint_description ?? '',
+                article: page?.services_hint_link,
+                isVisible: page?.services_hint_visible ?? false,
+            }"
         />
-        <HomeAdvant title="Наша сила — в гибкости и широком кругозоре" />
-        <HomeAffairs
-            tag="Дела"
-            title="Каждый случай — это история клиента, для которого мы нашли решение"
+        <HomeAdvant
+            :title="page?.advant_title"
+            :image-url="page?.advant_image_url"
+            :data="page?.advant_blocks"
         />
+        <HomeAffairs :tag="page?.affairs_tag ?? ''" :title="page?.affairs_title ?? ''" />
         <MapPrimary title="Защищаем ваши права в 25+ городах России" />
-        <HomeNews tag="Новости" title="Разборы актуальной судебной практики" />
+        <HomeNews
+            :tag="page?.news_tag ?? ''"
+            :title="page?.news_title ?? ''"
+            :cards="page?.news_cards.map((el) => el.articles_id)"
+        />
         <ConnectionPrimary />
     </NuxtLayout>
 </template>
@@ -28,21 +48,13 @@
         hero_main_button_text: string;
         hero_hint_title: string;
         hero_hint_description: string;
-        hero_hint_article: {
-            id: string | number;
-            home_id: any;
-            articles_id: IArticle;
-        };
+        hero_hint_article: IArticle;
 
         services_title: string;
         services_tag: string | null;
         services_hint_description: string | null;
         services_hint_title: string | null;
-        services_hint_link: {
-            id: string | number;
-            home_id: any;
-            articles_id: IArticle;
-        };
+        services_hint_link: IArticle;
         services_hint_visible: boolean;
 
         advant_title: string;
@@ -64,6 +76,13 @@
             articles_id: IArticle;
         }[];
     }
+
+    const { content: page } = useCms<IHomePage>('home', [
+        'hero_hint_article.*',
+        'services_hint_link.*',
+        'news_cards.*',
+        'news_cards.articles_id.*',
+    ]);
 </script>
 
 <style scoped lang="scss">

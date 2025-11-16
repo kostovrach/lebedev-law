@@ -2,26 +2,22 @@
     <section ref="container" class="home-hero">
         <div class="home-hero__container">
             <div class="home-hero__titlebox">
-                <h1 class="home-hero__title">Решаем юридические проблемы в любой правовой сфере</h1>
-                <p class="home-hero__desc">
-                    Команда адвокатов с едиными ценностями и ответственным подходом. Работаем по
-                    всей России.
-                </p>
+                <h1 class="home-hero__title">{{ props.title }}</h1>
+                <p class="home-hero__desc" v-if="props.subtitle.length">{{ props.subtitle }}</p>
             </div>
             <NuxtLink
+                v-if="props.hint.article"
                 class="home-hero__footer"
                 :to="{
                     name: 'blog-article',
-                    params: { article: slugify('example-article') },
-                    query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
+                    params: { article: slugify(props.hint.article.title) },
+                    query: { id: props.hint.article.id },
                 }"
             >
                 <div class="home-hero__footer-wrapper">
                     <div class="home-hero__footer-body">
-                        <p class="home-hero__footer-desc">
-                            Более 25 лет опыта работы, более 2500 дел
-                        </p>
-                        <p class="home-hero__footer-title">Как мы помогаем клиентам</p>
+                        <p class="home-hero__footer-desc">{{ props.hint.desc }}</p>
+                        <p class="home-hero__footer-title">{{ props.hint.title }}</p>
                     </div>
                     <span class="home-hero__footer-icon">
                         <SvgSprite type="arrow" :size="32" />
@@ -35,10 +31,11 @@
                     logic="double-line"
                     @click="openForm"
                 >
-                    <span>Заказать консультацию</span>
+                    <span>{{ props.buttonText }}</span>
                 </CircleButton>
             </div>
             <EmblaContainer
+                v-if="partners?.length"
                 ref="sliderRef"
                 class="home-hero__slider"
                 overflow="visible"
@@ -48,7 +45,7 @@
                 <EmblaSlide
                     class="home-hero__slide"
                     width="100%"
-                    v-for="(slide, idx) in tempSlides"
+                    v-for="(slide, idx) in partners"
                     :key="idx"
                 >
                     <div class="home-hero__slide-wrapper">
@@ -58,16 +55,16 @@
                         >
                             <img
                                 class="home-hero__slide-image"
-                                :src="slide.imageUrl"
-                                :alt="slide.title"
+                                :src="slide.image_show_url"
+                                :alt="slide.name ?? `Партнер ${idx + 1}`"
                             />
                         </picture>
                         <div class="home-hero__slide-titlebox">
-                            <h2 class="home-hero__slide-title">{{ slide.title }}</h2>
-                            <p class="home-hero__slide-desc" v-if="slide.description">
-                                {{ slide.description }}
+                            <h2 class="home-hero__slide-title">{{ slide.name }}</h2>
+                            <p class="home-hero__slide-desc" v-if="slide.post">
+                                {{ slide.post }}
                             </p>
-                            <div class="home-hero__slide-nav" v-if="tempSlides.length > 1">
+                            <div class="home-hero__slide-nav" v-if="partners.length > 1">
                                 <button
                                     class="home-hero__slide-button home-hero__slide-button--prev"
                                     type="button"
@@ -93,8 +90,35 @@
 
 <script setup lang="ts">
     import type { EmblaCarouselType } from 'embla-carousel';
+    import type { IArticle } from '~~/interfaces/article';
+    import type { IPerson } from '~~/interfaces/person';
     import { useModal } from 'vue-final-modal';
     import { ModalsForm } from '#components';
+
+    const props = withDefaults(
+        defineProps<{
+            title: string;
+            subtitle?: string;
+            buttonText?: string;
+            hint: {
+                title: string;
+                desc: string;
+                article?: IArticle;
+            };
+        }>(),
+        {
+            title: '',
+            subtitle: '',
+            buttonText: 'Заказать консультацию',
+            hint: () => ({
+                title: '',
+                desc: '',
+                article: undefined,
+            }),
+        }
+    );
+
+    const { content: partners } = useCms<IPerson[]>('partners');
 
     const { open: openForm, close: closeForm } = useModal({
         component: ModalsForm,
@@ -104,25 +128,6 @@
             },
         },
     });
-
-    // temp-data ============================================
-    const tempSlides: {
-        imageUrl: string;
-        title: string;
-        description: string;
-    }[] = [
-        {
-            imageUrl: '/img/temp/people-png/temp1.png',
-            title: 'Лебедев Захар Владимирович',
-            description: 'Адвокат, старший партнЁр, руководитель уголовной практики',
-        },
-        {
-            imageUrl: '/img/temp/people-png/temp2.png',
-            title: 'Иванов Иван Иванович',
-            description: 'Гений, плейбой, миллиардрер, филантроп',
-        },
-    ];
-    // ======================================================
 
     const container = ref<HTMLElement | null>(null);
     const { top: scrollTop } = useElementBounding(container);

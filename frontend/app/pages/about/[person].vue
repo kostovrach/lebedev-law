@@ -121,11 +121,6 @@
                                     <a
                                         class="person-view__section-gallery-image-container"
                                         data-fancybox="person-gallery"
-                                        :data-type="
-                                            slide.directus_files_id.type === 'video/mp4'
-                                                ? 'mp4'
-                                                : ''
-                                        "
                                         :href="`/api/cms/assets/${slide.directus_files_id.id}`"
                                     >
                                         <img

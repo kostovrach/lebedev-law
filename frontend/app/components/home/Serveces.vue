@@ -1,26 +1,22 @@
 <template>
-    <ContentBlock class="home-services" :title="props.title" :tag="props.tag">
+    <ContentBlock
+        class="home-services"
+        :title="props.title"
+        :tag="props.tag"
+        v-if="services?.length"
+    >
         <template #link>
             <NuxtLink class="home-services__link" :to="{ name: 'services' }">
                 <span>Все направления деятельности</span>
                 <span><SvgSprite type="arrow" :size="16" /></span>
             </NuxtLink>
         </template>
-        <div class="home-services__list">
-            <NuxtLink
-                class="home-services__item"
-                v-for="(card, idx) in tempCards"
-                :key="idx"
-                :to="{
-                    name: 'blog-article',
-                    params: { article: slugify('example-article') },
-                    query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
-                }"
-            >
+        <ul class="home-services__list">
+            <li class="home-services__item" v-for="(card, idx) in services" :key="idx">
                 <picture class="home-services__item-image-container">
                     <img
                         class="home-services__item-image"
-                        :src="card.imageUrl"
+                        :src="card.image_url"
                         :alt="card.title ?? '#'"
                     />
                 </picture>
@@ -28,40 +24,71 @@
                     <h3 class="home-services__item-title">{{ card.title }}</h3>
                     <div ref="cardRefs" class="home-services__item-body">
                         <p class="home-services__item-desc">{{ card.description }}</p>
-                        <div class="home-services__item-button">
-                            <span>{{ card.buttonText ?? 'Подробнее' }}</span>
+                        <NuxtLink
+                            v-if="card.article"
+                            class="home-services__item-button"
+                            :to="{
+                                name: 'blog-article',
+                                params: { article: slugify(card.article.title) },
+                                query: { id: card.article.id },
+                            }"
+                        >
+                            <span>Подробнее</span>
                             <span><SvgSprite type="arrow" :size="12" /></span>
-                        </div>
+                        </NuxtLink>
                     </div>
                 </div>
-            </NuxtLink>
-            <div class="home-services__banner">
-                <h4 class="home-services__banner-title">Прозрачная стоимость юридических услуг</h4>
-                <p class="home-services__banner-desc">
-                    Комплексное юридическое сопровождение бизнеса. Наша команда опытных юристов
-                    гарантирует профессиональный подход и индивидуальные решения, соответствующие
-                    вашим потребностям и целям.
+            </li>
+            <div class="home-services__banner" v-if="props.hint.isVisible">
+                <h4 class="home-services__banner-title">{{ props.hint.title }}</h4>
+                <p class="home-services__banner-desc" v-if="props.hint.description.length">
+                    {{ props.hint.description }}
                 </p>
-                <NuxtLink class="home-services__banner-button" :to="{ name: 'index' }">
+                <NuxtLink
+                    class="home-services__banner-button"
+                    v-if="props.hint.article"
+                    :to="{
+                        name: 'blog-article',
+                        params: { article: slugify(props.hint.article?.title) },
+                        query: { id: props.hint.article.id },
+                    }"
+                >
                     <span>Подробнее о стоимости</span>
                     <span><SvgSprite type="arrow" :size="14" /></span>
                 </NuxtLink>
             </div>
-        </div>
+        </ul>
     </ContentBlock>
 </template>
 
 <script setup lang="ts">
+    import type { IArticle } from '~~/interfaces/article';
+    import type { IService } from '~~/interfaces/service';
+
     const props = withDefaults(
         defineProps<{
             title: string;
             tag?: string;
+            hint: {
+                title: string;
+                description: string;
+                article?: IArticle;
+                isVisible: boolean;
+            };
         }>(),
         {
             title: '',
             tag: '',
+            hint: () => ({
+                title: '',
+                description: '',
+                article: undefined,
+                isVisible: false,
+            }),
         }
     );
+
+    const { content: services } = useCms<IService[]>('services', ['article.*']);
 
     const cardRefs = ref<HTMLElement[]>([]);
 
@@ -70,50 +97,6 @@
 
         cardRefs.value.forEach((el) => el.style.setProperty('--h', `${el.offsetHeight}px`));
     });
-
-    const tempCards: {
-        imageUrl: string;
-        title: string;
-        description: string;
-        buttonText?: string;
-    }[] = [
-        {
-            imageUrl: '/img/temp/temp.jpg',
-            title: 'Уголовные дела',
-            description:
-                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit earum esse, consequatur illum debitis sed',
-        },
-        {
-            imageUrl: '/img/temp/temp.jpg',
-            title: 'Семейные споры',
-            description:
-                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit earum esse, consequatur illum debitis sed ',
-        },
-        {
-            imageUrl: '/img/temp/temp.jpg',
-            title: 'Трудовые споры',
-            description:
-                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit earum esse, consequatur illum debitis sed',
-        },
-        {
-            imageUrl: '/img/temp/temp.jpg',
-            title: 'Налоги',
-            description:
-                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit earum esse, consequatur illum debitis sed',
-        },
-        {
-            imageUrl: '/img/temp/temp.jpg',
-            title: 'Договора и сделки',
-            description:
-                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit earum esse, consequatur illum debitis sed',
-        },
-        {
-            imageUrl: '/img/temp/temp.jpg',
-            title: 'Корпоративное право',
-            description:
-                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit earum esse, consequatur illum debitis sed',
-        },
-    ];
 </script>
 
 <style scoped lang="scss">
@@ -202,6 +185,7 @@
             &-desc {
                 font-size: rem(12);
                 line-height: 1.4;
+                @include lineClamp(5);
             }
             &-button {
                 display: flex;
@@ -226,7 +210,7 @@
             }
         }
         &__banner {
-            grid-column: span 2;
+            grid-column: 2 / span 2;
             display: flex;
             flex-direction: column;
             align-items: center;
