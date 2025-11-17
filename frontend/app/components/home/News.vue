@@ -74,6 +74,7 @@
         }
         &__item {
             flex: 1 1 rem(380);
+            max-width: calc(50% - rem(8));
             cursor: pointer;
             background-color: $c-FFFFFF;
             @include hover-curtain($init-color: $c-EEF1F4);

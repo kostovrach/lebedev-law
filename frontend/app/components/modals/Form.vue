@@ -22,6 +22,7 @@
                     <label class="modal-form__inputbox" for="form-name">
                         <span>Имя</span>
                         <input
+                            v-model="formData.name"
                             id="form-name"
                             class="modal-form__input"
                             name="form-name"
@@ -29,17 +30,24 @@
                         />
                     </label>
                     <label class="modal-form__inputbox" for="form-tel">
-                        <span>Телефон</span>
+                        <span>Телефон*</span>
                         <InputMask
+                            v-model="formData.telephone"
                             id="form-tel"
                             class="modal-form__input"
                             mask="+7 (999) 999-99-99"
                             placeholder="+7 (___) ___-__-__"
                             name="form-tel"
+                            @click="telephoneError = false"
                         />
+                        <div class="modal-form__popup" v-if="telephoneError">
+                            <span>!</span>
+                            Необходимо указать контактную информацию
+                        </div>
                     </label>
                     <label class="modal-form__inputbox" for="form-question">
                         <textarea
+                            v-model="formData.message"
                             id="form-question"
                             class="modal-form__input"
                             name="form-question"
@@ -50,11 +58,11 @@
                         <label class="modal-form__agreement">
                             <div class="modal-form__agreement-checkbox">
                                 <input
+                                    v-model="formData.agreement"
                                     id="form-agreement"
                                     name="form-agreement"
                                     type="checkbox"
-                                    required
-                                    checked
+                                    @click="agreementError = false"
                                 />
                             </div>
                             <div>
@@ -74,8 +82,12 @@
                                     {{ policy.title.toLowerCase() }}
                                 </button>
                             </div>
+                            <div class="modal-form__popup" v-if="agreementError">
+                                <span>!</span>
+                                Нельзя продолжить без вашего согласия
+                            </div>
                         </label>
-                        <button class="modal-form__button" type="submit">
+                        <button class="modal-form__button" type="submit" @click.prevent="submit">
                             <span>Отправить</span>
                             <span><SvgSprite type="arrow" :size="16" /></span>
                         </button>
@@ -88,25 +100,66 @@
 
 <script setup lang="ts">
     import { VueFinalModal } from 'vue-final-modal';
-    import type { IPolicy } from '~~/interfaces/policy';
-
     import { ModalsDocs } from '#components';
     import { useModal } from 'vue-final-modal';
 
+    // types =======================================================
+    import type { IPolicy } from '~~/interfaces/policy';
     interface IForm {
         id: string | number;
         date_updated: string | null;
         title: string;
         description: string | null;
     }
+    // =============================================================
 
+    // data ========================================================
     const { content: component } = useCms<IForm>('form');
     const { content: policies, status: policiesStatus } = useCms<IPolicy[]>('policies');
+
+    const formData = reactive({
+        name: '',
+        telephone: '',
+        message: '',
+        agreement: true,
+    });
+
+    const telephoneError = ref(false);
+    const agreementError = ref(false);
+
+    const formValidator = (): boolean => {
+        if (!formData.telephone || !formData.telephone.trim().length) {
+            telephoneError.value = true;
+            return false;
+        }
+        if (!formData.agreement) {
+            agreementError.value = true;
+            return false;
+        }
+        return true;
+    };
+
+    const submit = async () => {
+        if (!formValidator()) return;
+        const res = await $fetch('/api/mail/', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (res.ok) {
+            formData.name = '';
+            formData.telephone = '';
+            formData.message = '';
+        } else alert('Ошибка отправки данных, повторите попытку позже');
+    };
+
+    // =============================================================
 
     const emit = defineEmits<{
         (e: 'close'): void;
     }>();
 
+    // methods =====================================================
     function openDocsModal(title: string, dateUpdated: string, content: string) {
         const { open: openModal, close: closeModal } = useModal({
             component: ModalsDocs,
@@ -122,9 +175,10 @@
         });
         openModal();
     }
+    // =============================================================
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
     @use '~/assets/scss/abstracts' as *;
 
     .modal-form {
@@ -176,11 +230,50 @@
         &__body {
             margin-top: rem(64);
         }
+        &__popup {
+            position: absolute;
+            z-index: 5;
+            top: 130%;
+            left: rem(-10);
+            display: flex;
+            align-items: center;
+            gap: rem(8);
+            color: $c-FFFFFF;
+            font-size: rem(12);
+            background-color: $c-191F28;
+            border-radius: rem(8);
+            padding: rem(8) rem(16);
+            > span {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: rem(16);
+                aspect-ratio: 1;
+                font-size: rem(14);
+                font-weight: $fw-semi;
+                color: $c-text;
+                background-color: $c-FFFFFF;
+                border-radius: 50%;
+            }
+            &::before {
+                content: '';
+                position: absolute;
+                z-index: 4;
+                top: rem(-8);
+                left: 5%;
+                width: rem(16);
+                aspect-ratio: 1;
+                background-color: inherit;
+                rotate: 45deg;
+                mask-image: linear-gradient(135deg, #000 50%, transparent 50%);
+            }
+        }
         &__inputbox {
             position: relative;
             display: block;
             width: 100%;
             border-bottom: rem(1) solid $c-accent;
+            padding: rem(18) 0;
             &::before {
                 content: '';
                 position: absolute;
@@ -240,7 +333,6 @@
             font-family: inherit;
             font-size: rem(17);
             color: $c-FFFFFF;
-            padding: rem(18) 0;
         }
         &__controls {
             display: flex;
@@ -249,6 +341,7 @@
             margin-top: rem(64);
         }
         &__agreement {
+            position: relative;
             display: flex;
             align-items: center;
             gap: rem(8);

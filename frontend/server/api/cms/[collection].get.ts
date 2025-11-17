@@ -1,8 +1,7 @@
-import type { H3Event } from 'h3';
 import { fetchCollection } from '../../services/directusData';
 
 export default defineCachedEventHandler(
-    async (event: H3Event) => {
+    async (event) => {
         const config = useRuntimeConfig();
 
         try {
@@ -15,7 +14,7 @@ export default defineCachedEventHandler(
 
             const { collection } = getRouterParams(event);
             if (!collection) {
-                event.res.status = 400;
+                event.node.res.statusCode = 400;
                 return { data: null, error: 'collection is required' };
             }
 
@@ -44,7 +43,7 @@ export default defineCachedEventHandler(
                 try {
                     filter = typeof q.filter === 'string' ? JSON.parse(q.filter) : q.filter;
                 } catch {
-                    event.res.status = 400;
+                    event.node.res.statusCode = 400;
                     return { data: null, error: 'invalid filter JSON' };
                 }
             }
@@ -63,7 +62,7 @@ export default defineCachedEventHandler(
             return { data };
         } catch (err: any) {
             console.error('[api/cms] error', err);
-            event.res.status = 500;
+            event.node.res.statusCode = 500;
             return { data: null, error: String(err?.message || err) };
         }
     },

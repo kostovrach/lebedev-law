@@ -56,8 +56,9 @@
                                 <span><SvgSprite type="arrow" :size="18" /></span>
                             </button>
                             <a
+                                v-if="contact?.tg"
                                 class="article__hint-link"
-                                href="https://example.com"
+                                :href="contact.tg.trim().replace(/\s+/g, '')"
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
@@ -109,6 +110,7 @@
     import { useModal } from 'vue-final-modal';
     import { ModalsForm } from '#components';
     import type { IArticle } from '~~/interfaces/article';
+    import type { IContact } from '~~/interfaces/contact';
 
     const route = useRoute();
     const router = useRouter();
@@ -116,6 +118,7 @@
     const currentArticleId = route.query.id;
 
     const { content: articles } = useCms<IArticle[]>('articles');
+    const { content: contact } = useCms<IContact>('contact');
 
     const article = computed(() => articles.value?.find((el) => el.id === currentArticleId));
 

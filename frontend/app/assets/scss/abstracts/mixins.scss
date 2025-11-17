@@ -261,6 +261,7 @@
     a {
         color: $c-accent;
         text-decoration: underline;
+        white-space: nowrap;
         @media (pointer: fine) {
             &:hover {
                 text-decoration: none;
