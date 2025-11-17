@@ -1,6 +1,5 @@
 export default defineNuxtConfig({
     compatibilityDate: '2025-07-15',
-    devtools: { enabled: true },
     ssr: true,
 
     typescript: {
@@ -20,12 +19,6 @@ export default defineNuxtConfig({
             ],
         },
     },
-
-    // -------------------Настройки Nitro--------------------------
-    // nitro: {
-    //     preset: 'vercel',
-    // },
-    // ------------------------------------------------------------
 
     runtimeConfig: {
         public: {
