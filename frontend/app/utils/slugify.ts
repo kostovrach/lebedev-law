@@ -35,16 +35,18 @@ export function slugify(text: string | number): string {
         я: 'ya',
     };
 
-    return text
-        .toString()
-        .toLowerCase()
-        .split('')
-        .map((ch) => translitMap[ch] ?? ch)
-        .join('')
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9\s-]/g, '')
-        .trim()
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-');
+    if (text)
+        return text
+            .toString()
+            .toLowerCase()
+            .split('')
+            .map((ch) => translitMap[ch] ?? ch)
+            .join('')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9\s-]/g, '')
+            .trim()
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-');
+    else return 'error';
 }

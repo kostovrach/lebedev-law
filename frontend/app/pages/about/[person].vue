@@ -11,14 +11,14 @@
                         </div>
                     </aside>
                     <div class="person-view__info">
-                        <picture class="person-view__image-container">
+                        <picture class="person-view__image-container" v-if="person?.image_url">
                             <img
                                 class="person-view__image"
-                                :src="person?.imageUrl"
+                                :src="person?.image_url"
                                 :alt="person?.name ?? '#'"
                             />
                         </picture>
-                        <div class="person-view__chips">
+                        <div class="person-view__chips" v-if="person?.areas?.length">
                             <NuxtLink
                                 v-for="(chip, idx) in person?.areas"
                                 :key="idx"
@@ -39,7 +39,10 @@
                             </div>
                         </aside>
                         <Lightbox>
-                            <EmblaContainer class="person-view__section-slider">
+                            <EmblaContainer
+                                class="person-view__section-slider"
+                                :options="{ dragFree: true }"
+                            >
                                 <EmblaSlide
                                     v-for="slide in person?.docs"
                                     :key="slide.id"
@@ -49,18 +52,28 @@
                                 >
                                     <div class="person-view__section-slide-wrapper">
                                         <div class="person-view__section-slide-titlebox">
-                                            <span class="person-view__section-slide-tag">.pdf</span>
+                                            <span class="person-view__section-slide-tag">
+                                                {{
+                                                    normalizeFileType(slide.directus_files_id.type)
+                                                }}
+                                            </span>
                                             <h3
                                                 class="person-view__section-slide-title"
-                                                :title="slide.title"
+                                                :title="slide.directus_files_id.title"
                                             >
-                                                {{ slide.title }}
+                                                {{ slide.directus_files_id.title }}
                                             </h3>
                                         </div>
                                         <a
                                             class="person-view__section-slide-button"
-                                            data-fancybox="person-docs"
-                                            href="/img/temp/temp.jpg"
+                                            :data-type="
+                                                normalizeFileType(slide.directus_files_id.type) ===
+                                                '.pdf'
+                                                    ? 'pdf'
+                                                    : ''
+                                            "
+                                            data-fancybox="`person-gallery"
+                                            :href="`/api/cms/assets/${slide.directus_files_id.id}`"
                                         >
                                             <span>Открыть</span>
                                             <span><SvgSprite type="arrow" :size="14" /></span>
@@ -94,7 +107,10 @@
                             </div>
                         </aside>
                         <Lightbox>
-                            <EmblaContainer class="person-view__section-gallery">
+                            <EmblaContainer
+                                class="person-view__section-gallery"
+                                :options="{ dragFree: true }"
+                            >
                                 <EmblaSlide
                                     v-for="slide in person?.gallery"
                                     :key="slide.id"
@@ -105,7 +121,7 @@
                                     <a
                                         class="person-view__section-gallery-image-container"
                                         data-fancybox="person-gallery"
-                                        href="/img/temp/temp.jpg"
+                                        :href="`/api/cms/assets/${slide.directus_files_id.id}`"
                                     >
                                         <img
                                             class="person-view__section-gallery-image"
@@ -130,20 +146,20 @@
                                 class="person-view__section-list-item"
                                 :to="{
                                     name: 'blog-article',
-                                    params: { article: slugify('example-article') },
-                                    query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
+                                    params: { article: slugify(article.articles_id.title) },
+                                    query: { id: article.articles_id.id },
                                 }"
                             >
                                 <div class="person-view__section-list-item-wrapper">
                                     <h3
                                         class="person-view__section-list-item-title"
-                                        :title="article.article_id.title"
+                                        :title="article.articles_id.title"
                                     >
-                                        {{ article.article_id.title }}
+                                        {{ article.articles_id.title }}
                                     </h3>
                                     <ul class="person-view__section-list-item-chips">
                                         <li
-                                            v-for="(chip, idx) in article.article_id.tags"
+                                            v-for="(chip, idx) in article.articles_id.tags"
                                             :key="idx"
                                             class="person-view__section-list-item-chips-item"
                                         >
@@ -163,10 +179,13 @@
                                 <h2 class="person-view__section-title">Сертификаты</h2>
                             </div>
                         </aside>
-                        <EmblaContainer class="person-view__section-slider">
+                        <EmblaContainer
+                            class="person-view__section-slider"
+                            :options="{ dragFree: true }"
+                        >
                             <EmblaSlide
-                                v-for="slide in person?.media"
-                                :key="slide.id"
+                                v-for="(slide, idx) in person?.media"
+                                :key="idx"
                                 width="100%"
                                 :space-between="16"
                                 class="person-view__section-slide"
@@ -174,7 +193,7 @@
                                 <div class="person-view__section-slide-wrapper">
                                     <div class="person-view__section-slide-titlebox">
                                         <span class="person-view__section-slide-tag">
-                                            Комерсантъ
+                                            {{ slide.resource }}
                                         </span>
                                         <h3
                                             class="person-view__section-slide-title"
@@ -186,7 +205,7 @@
                                     <a
                                         class="person-view__section-slide-button"
                                         target="_blank"
-                                        href="https://example.com"
+                                        :href="slide.link"
                                         rel="noopener noreferrer"
                                     >
                                         <span>Открыть</span>
@@ -204,9 +223,21 @@
 </template>
 
 <script setup lang="ts">
-    const route = useRoute();
+    import type { IPerson } from '~~/interfaces/person';
 
-    const person = await usePersonsStore().getPerson(route.query.id as string);
+    const route = useRoute();
+    const router = useRouter();
+
+    const { content: partners } = useCms<IPerson[]>('partners', [
+        'articles.*',
+        'articles.articles_id.*',
+        'docs.*',
+        'docs.directus_files_id.*',
+        ' gallery.*',
+        'gallery.directus_files_id.*',
+    ]);
+
+    const person = computed(() => partners.value?.find((el) => el.id === route.query.id));
 </script>
 
 <style lang="scss">

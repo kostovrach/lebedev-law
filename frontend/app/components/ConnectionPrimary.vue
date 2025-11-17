@@ -3,33 +3,28 @@
         <div class="connection-primary__container">
             <div class="connection-primary__wrapper">
                 <div class="connection-primary__titlebox">
-                    <h2 class="connection-primary__title">
-                        Получите
-                        <span>бесплатную</span>
-                        первичную консультацию — без скрытых платежей и обязательств.
-                    </h2>
+                    <h2 class="connection-primary__title">{{ component?.title }}</h2>
                     <div class="connection-primary__accent">
-                        0
+                        {{ component?.price ?? 0 }}
                         <span class="ruble"></span>
                     </div>
                 </div>
                 <div class="connection-primary__card">
-                    <div class="connection-primary__card-head">
+                    <div class="connection-primary__card-head" v-if="component?.card_name">
                         <picture class="connection-primary__card-image-container">
                             <img
                                 class="connection-primary__card-image"
-                                src="/img/temp/temp.jpg"
+                                :src="component?.card_image_url ?? '/img/partner-placeholder.png'"
                                 alt="#"
                             />
                         </picture>
-                        <h3 class="connection-primary__card-title">Захар Лебедев</h3>
-                        <span class="connection-primary__card-subtitle">
-                            арбитражный управляющий
+                        <h3 class="connection-primary__card-title">{{ component.card_name }}</h3>
+                        <span class="connection-primary__card-subtitle" v-if="component.card_post">
+                            {{ component.card_post }}
                         </span>
                     </div>
-                    <p class="connection-primary__card-content">
-                        Заполните заявку на сайте с описанием Вашей ситуации или свяжитесь с нами
-                        через Telegram, чтобы получить бесплатную консультацию
+                    <p class="connection-primary__card-content" v-if="component?.card_description">
+                        {{ component?.card_description }}
                     </p>
                     <div class="connection-primary__card-footer">
                         <button
@@ -41,8 +36,9 @@
                             <span><SvgSprite type="arrow" :size="18" /></span>
                         </button>
                         <a
+                            v-if="contact?.tg"
                             class="connection-primary__card-link"
-                            href="https://example.com"
+                            :href="contact.tg.trim().replace(/\s+/g, '')"
                             target="_blank"
                             rel="noopener noreferrer"
                         >
@@ -59,6 +55,22 @@
 <script setup lang="ts">
     import { useModal } from 'vue-final-modal';
     import { ModalsForm } from '#components';
+    import type { IContact } from '~~/interfaces/contact';
+
+    interface IContactPrimary {
+        id: string | number;
+        date_updated: string | null;
+        title: string;
+        price: number;
+        card_name: string | null;
+        card_post: string | null;
+        card_image: string | null;
+        card_image_url?: string | null;
+        card_description: string;
+    }
+
+    const { content: component } = useCms<IContactPrimary>('contact_primary');
+    const { content: contact } = useCms<IContact>('contact');
 
     const { open: openForm, close: closeForm } = useModal({
         component: ModalsForm,

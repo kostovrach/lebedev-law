@@ -35,6 +35,7 @@ services:
             STORAGE_LOCAL_ROOT: ${STORAGE_LOCAL_ROOT}
             CORS_ENABLED: ${CORS_ENABLED}
             CORS_ORIGIN: ${CORS_ORIGIN}
+            ASSETS_CONTENT_SECURITY: false
         volumes:
             - ${PWD}/cms/uploads:/directus/uploads
             - ${PWD}/cms/extensions:/directus/extensions

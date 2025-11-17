@@ -3,7 +3,7 @@ import type { AsyncDataOptions } from '#app';
 export function useCms<T = any>(
     collection: string,
     withRelations: string[] = [],
-    requestOpt?: AsyncDataOptions<any>,
+    requestOpt?: AsyncDataOptions<{ data: T }>,
     opts: { resolveFiles?: boolean; force?: boolean; key?: string; cacheTtl?: number } = {}
 ) {
     const key = opts.key ?? `cms:${collection}:${JSON.stringify(withRelations)}`;

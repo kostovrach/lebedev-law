@@ -3,15 +3,16 @@
         <section class="cases">
             <div class="cases__container">
                 <div class="cases__head">
-                    <picture class="cases__cover-container">
-                        <img class="cases__cover" src="/img/temp/temp.jpg" alt="Завершенные дела" />
+                    <picture class="cases__cover-container" v-if="page?.image_url">
+                        <img
+                            class="cases__cover"
+                            :src="page?.image_url"
+                            :alt="page?.title ?? 'Завершенные дела'"
+                        />
                     </picture>
                     <div class="cases__titlebox">
-                        <h1 class="cases__title">Практика</h1>
-                        <p class="cases__subtitle">
-                            Наши юристы успешно завершили сотни сложных дел в различных отраслях
-                            права. Ниже представлены некоторые из наиболее показательных дел.
-                        </p>
+                        <h1 class="cases__title">{{ page?.title }}</h1>
+                        <p class="cases__subtitle" v-if="page?.subtitle">{{ page?.subtitle }}</p>
                     </div>
                     <div class="cases__chips">
                         <button
@@ -24,27 +25,29 @@
                         >
                             <span>Все</span>
                         </button>
-                        <button
-                            v-for="chip in chips"
-                            :key="chip"
-                            :class="[
-                                'cases__chips-item',
-                                { active: activeFilter === slugify(chip) },
-                            ]"
-                            type="button"
-                            @click="setFilter(slugify(chip))"
-                        >
-                            <span>{{ chip }}</span>
-                        </button>
+                        <ClientOnly>
+                            <button
+                                v-for="chip in chips"
+                                :key="chip"
+                                :class="[
+                                    'cases__chips-item',
+                                    { active: activeFilter === slugify(chip) },
+                                ]"
+                                type="button"
+                                @click="setFilter(slugify(chip))"
+                            >
+                                <span>{{ chip }}</span>
+                            </button>
+                        </ClientOnly>
                     </div>
                 </div>
                 <ul class="cases__body">
                     <li
-                        v-for="(article, idx) in tempArticles"
-                        :key="article.id"
+                        v-for="(item, idx) in page?.articles"
+                        :key="item.id"
                         :class="['cases__item', { active: activeIdx == idx }]"
                         v-show="
-                            article.tags.some((el) => slugify(el) === activeFilter) ||
+                            item.articles_id.tags.some((el) => slugify(el) === activeFilter) ||
                             activeFilter === DEFAULT_FILTER
                         "
                     >
@@ -53,18 +56,29 @@
                                 class="cases__item-head"
                                 type="button"
                                 @click="setActiveIdx(idx)"
-                                :title="article.title"
+                                :title="item.articles_id.title"
                             >
                                 <div class="cases__item-info">
-                                    <span class="cases__item-date">{{ article.date }}</span>
+                                    <span class="cases__item-date">
+                                        {{
+                                            normalizeDate(
+                                                item.articles_id.date_updated ??
+                                                    item.articles_id.date_created,
+                                                false
+                                            )
+                                        }}
+                                    </span>
                                     <div class="cases__item-tags">
-                                        <span v-for="(tag, idx) in article.tags" :key="idx">
+                                        <span
+                                            v-for="(tag, idx) in item.articles_id.tags"
+                                            :key="idx"
+                                        >
                                             {{ tag }}
                                         </span>
                                     </div>
                                 </div>
                                 <div class="cases__item-titlebox">
-                                    <h2 class="cases__item-title">{{ article.title }}</h2>
+                                    <h2 class="cases__item-title">{{ item.articles_id.title }}</h2>
                                     <span class="cases__item-icon"></span>
                                 </div>
                             </button>
@@ -76,21 +90,21 @@
                                 <picture class="cases__item-image-container">
                                     <img
                                         class="cases__item-image"
-                                        :src="article.imageUrl"
-                                        :alt="article.title ?? '#'"
+                                        :src="item.articles_id.image_url ?? '/img/temp/temp.jpg'"
+                                        :alt="item.articles_id.title ?? '#'"
                                     />
                                 </picture>
                                 <div class="cases__item-content">
                                     <div
                                         class="cases__item-content-wrapper"
-                                        v-html="article.content"
+                                        v-html="item.articles_id.content"
                                     ></div>
                                     <NuxtLink
                                         class="cases__item-link"
                                         :to="{
                                             name: 'blog-article',
-                                            params: { article: slugify('example-article') },
-                                            query: { id: '1c2a73d9-8f43-4b9a-9c3e-2e41c28bbf7a' },
+                                            params: { article: slugify(item.articles_id.title) },
+                                            query: { id: item.articles_id.id },
                                         }"
                                     >
                                         <span>Читать полностью</span>
@@ -122,369 +136,22 @@
                 </div>
             </div>
         </section>
-        <MapPrimary title="Защищаем ваши права в 25+ городах России" />
+        <MapPrimary />
     </NuxtLayout>
 </template>
 
 <script setup lang="ts">
-    // temp-data ===========================================
-    const tempArticles: {
-        id: number | string;
-        date: number | string;
-        tags: string[];
-        imageUrl: string;
-        title: string;
-        content: string;
-        articleId?: string;
-    }[] = [
-        {
-            id: 'e8ee6fb4-0cc3-4058-acf6-f6bf861e2e82',
-            date: 2001,
-            tags: ['Гражданские дела', 'Защита при ДТП'],
-            title: 'Успешное взыскание долга с ООО «Альфа»',
-            content: `
-                <h3>Задача</h3>
-                <p>
-                    Юридическое бюро занималось налоговым сопровождением и защитой клиента в
-                    уголовном деле, обеспечивая полное представительство и защиту интересов в
-                    сложных правовых ситуациях.
-                </p>
-                <h3>Решение</h3>
-                <p>
-                    Предоставив полное сопровождение в уголовных и административных делах, а также
-                    защиту во время допросов и проверок. Команда экспертов обеспечила надёжную
-                    защиту интересов клиента в сложной правовой ситуации.
-                </p>
-                <h3>Результаты</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>30,4%</th>
-                            <th>25,2%</th>
-                            <th>10 млн. ₽</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Снижение годовых расходов за счёт налоговых вычетов</td>
-                            <td>Снижение налоговых рисков</td>
-                            <td>Экономия средств за счёт оптимизации</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `,
-            imageUrl: '/img/temp/temp.jpg',
-        },
-        {
-            id: 'ca79031d-cfc2-42c9-90c9-9be2b2265214',
-            date: 2012,
-            tags: ['Семейные споры', 'Трудовые споры'],
-            title: 'Разрешение корпоративного спора в «Дельта»',
-            content: `
-                <h3>Задача</h3>
-                <p>
-                    Юридическое бюро занималось налоговым сопровождением и защитой клиента в
-                    уголовном деле, обеспечивая полное представительство и защиту интересов в
-                    сложных правовых ситуациях.
-                </p>
-                <h3>Решение</h3>
-                <p>
-                    Предоставив полное сопровождение в уголовных и административных делах, а также
-                    защиту во время допросов и проверок. Команда экспертов обеспечила надёжную
-                    защиту интересов клиента в сложной правовой ситуации.
-                </p>
-                <h3>Результаты</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>30,4%</th>
-                            <th>25,2%</th>
-                            <th>10 млн. ₽</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Снижение годовых расходов за счёт налоговых вычетов</td>
-                            <td>Снижение налоговых рисков</td>
-                            <td>Экономия средств за счёт оптимизации</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `,
-            imageUrl: '/img/temp/temp.jpg',
-        },
-        {
-            id: '18ce3db1-3b4e-4502-b5e6-61de1a572202',
-            date: 2025,
-            tags: ['Уголовные дела', 'Семейные споры'],
-            title: 'Защита прав потребителей при покупке авто',
-            content: `
-                <h3>Задача</h3>
-                <p>
-                    Юридическое бюро занималось налоговым сопровождением и защитой клиента в
-                    уголовном деле, обеспечивая полное представительство и защиту интересов в
-                    сложных правовых ситуациях.
-                </p>
-                <h3>Решение</h3>
-                <p>
-                    Предоставив полное сопровождение в уголовных и административных делах, а также
-                    защиту во время допросов и проверок. Команда экспертов обеспечила надёжную
-                    защиту интересов клиента в сложной правовой ситуации.
-                </p>
-                <h3>Результаты</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>30,4%</th>
-                            <th>25,2%</th>
-                            <th>10 млн. ₽</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Снижение годовых расходов за счёт налоговых вычетов</td>
-                            <td>Снижение налоговых рисков</td>
-                            <td>Экономия средств за счёт оптимизации</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `,
-            imageUrl: '/img/temp/temp.jpg',
-        },
-        {
-            id: '256abd9a-a312-40ae-b0c3-0c1f0945d81b',
-            date: 2025,
-            tags: ['Административные дела', 'Уголовные дела'],
-            title: 'Комплексное юридическое сопровождение процедуры банкротства физического лица с минимальными потерями',
-            content: `
-                <h3>Задача</h3>
-                <p>
-                    Юридическое бюро занималось налоговым сопровождением и защитой клиента в
-                    уголовном деле, обеспечивая полное представительство и защиту интересов в
-                    сложных правовых ситуациях.
-                </p>
-                <h3>Решение</h3>
-                <p>
-                    Предоставив полное сопровождение в уголовных и административных делах, а также
-                    защиту во время допросов и проверок. Команда экспертов обеспечила надёжную
-                    защиту интересов клиента в сложной правовой ситуации.
-                </p>
-                <h3>Результаты</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>30,4%</th>
-                            <th>25,2%</th>
-                            <th>10 млн. ₽</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Снижение годовых расходов за счёт налоговых вычетов</td>
-                            <td>Снижение налоговых рисков</td>
-                            <td>Экономия средств за счёт оптимизации</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `,
-            imageUrl: '/img/temp/temp.jpg',
-        },
-        {
-            id: '717aecec-4fc0-44fe-8860-e14732a4be7d',
-            date: 2017,
-            tags: ['Бизнес'],
-            title: 'Раздел имущества супругов в Москве',
-            content: `
-                <h3>Задача</h3>
-                <p>
-                    Юридическое бюро занималось налоговым сопровождением и защитой клиента в
-                    уголовном деле, обеспечивая полное представительство и защиту интересов в
-                    сложных правовых ситуациях.
-                </p>
-                <h3>Решение</h3>
-                <p>
-                    Предоставив полное сопровождение в уголовных и административных делах, а также
-                    защиту во время допросов и проверок. Команда экспертов обеспечила надёжную
-                    защиту интересов клиента в сложной правовой ситуации.
-                </p>
-                <h3>Результаты</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>30,4%</th>
-                            <th>25,2%</th>
-                            <th>10 млн. ₽</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Снижение годовых расходов за счёт налоговых вычетов</td>
-                            <td>Снижение налоговых рисков</td>
-                            <td>Экономия средств за счёт оптимизации</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `,
-            imageUrl: '/img/temp/temp.jpg',
-        },
-        {
-            id: 'fcfcfcb1-994d-40bc-85f2-7776a5c2a58f',
-            date: 2023,
-            tags: ['Трудовые споры', 'Прочее'],
-            title: 'Признание сделки недействительной в суде',
-            content: `
-                <h3>Задача</h3>
-                <p>
-                    Юридическое бюро занималось налоговым сопровождением и защитой клиента в
-                    уголовном деле, обеспечивая полное представительство и защиту интересов в
-                    сложных правовых ситуациях.
-                </p>
-                <h3>Решение</h3>
-                <p>
-                    Предоставив полное сопровождение в уголовных и административных делах, а также
-                    защиту во время допросов и проверок. Команда экспертов обеспечила надёжную
-                    защиту интересов клиента в сложной правовой ситуации.
-                </p>
-                <h3>Результаты</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>30,4%</th>
-                            <th>25,2%</th>
-                            <th>10 млн. ₽</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Снижение годовых расходов за счёт налоговых вычетов</td>
-                            <td>Снижение налоговых рисков</td>
-                            <td>Экономия средств за счёт оптимизации</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `,
-            imageUrl: '/img/temp/temp.jpg',
-        },
-        {
-            id: '5eeb89b9-9d6e-42b6-8c8e-67257934e1c8',
-            date: 2018,
-            tags: ['Гражданские дела'],
-            title: 'Представительство в арбитражном суде',
-            content: `
-                <h3>Задача</h3>
-                <p>
-                    Юридическое бюро занималось налоговым сопровождением и защитой клиента в
-                    уголовном деле, обеспечивая полное представительство и защиту интересов в
-                    сложных правовых ситуациях.
-                </p>
-                <h3>Решение</h3>
-                <p>
-                    Предоставив полное сопровождение в уголовных и административных делах, а также
-                    защиту во время допросов и проверок. Команда экспертов обеспечила надёжную
-                    защиту интересов клиента в сложной правовой ситуации.
-                </p>
-                <h3>Результаты</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>30,4%</th>
-                            <th>25,2%</th>
-                            <th>10 млн. ₽</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Снижение годовых расходов за счёт налоговых вычетов</td>
-                            <td>Снижение налоговых рисков</td>
-                            <td>Экономия средств за счёт оптимизации</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `,
-            imageUrl: '/img/temp/temp.jpg',
-        },
-        {
-            id: 'b3c06e58-a9a1-46d0-86fa-65be7686c9bd',
-            date: 2019,
-            tags: ['Арбитражный суд'],
-            title: 'Успешное разрешение сложного спора с застройщиком «СтройИнвест» в пользу дольщика с выплатой неустойки',
-            content: `
-                <h3>Задача</h3>
-                <p>
-                    Юридическое бюро занималось налоговым сопровождением и защитой клиента в
-                    уголовном деле, обеспечивая полное представительство и защиту интересов в
-                    сложных правовых ситуациях.
-                </p>
-                <h3>Решение</h3>
-                <p>
-                    Предоставив полное сопровождение в уголовных и административных делах, а также
-                    защиту во время допросов и проверок. Команда экспертов обеспечила надёжную
-                    защиту интересов клиента в сложной правовой ситуации.
-                </p>
-                <h3>Результаты</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>30,4%</th>
-                            <th>25,2%</th>
-                            <th>10 млн. ₽</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Снижение годовых расходов за счёт налоговых вычетов</td>
-                            <td>Снижение налоговых рисков</td>
-                            <td>Экономия средств за счёт оптимизации</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `,
-            imageUrl: '/img/temp/temp.jpg',
-        },
-        {
-            id: 'd5345b6d-0d74-4409-b675-816f2c1ced06',
-            date: 2025,
-            tags: ['Защита при ДТП', 'Наследственные дела'],
-            title: 'Защита интеллектуальной собственности бренда',
-            content: `
-                <h3>Задача</h3>
-                <p>
-                    Юридическое бюро занималось налоговым сопровождением и защитой клиента в
-                    уголовном деле, обеспечивая полное представительство и защиту интересов в
-                    сложных правовых ситуациях.
-                </p>
-                <h3>Решение</h3>
-                <p>
-                    Предоставив полное сопровождение в уголовных и административных делах, а также
-                    защиту во время допросов и проверок. Команда экспертов обеспечила надёжную
-                    защиту интересов клиента в сложной правовой ситуации.
-                </p>
-                <h3>Результаты</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>30,4%</th>
-                            <th>25,2%</th>
-                            <th>10 млн. ₽</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Снижение годовых расходов за счёт налоговых вычетов</td>
-                            <td>Снижение налоговых рисков</td>
-                            <td>Экономия средств за счёт оптимизации</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `,
-            imageUrl: '/img/temp/temp.jpg',
-        },
-    ];
-    // =====================================================
+    import type { ICasesPage } from '~~/interfaces/cases-page';
+
+    const { content: page } = useCms<ICasesPage>('cases', ['articles.*', 'articles.articles_id.*']);
 
     const route = useRoute();
 
-    const chips = computed(() => [...new Set(tempArticles.flatMap((el) => el.tags))]);
+    const chips = computed(() => [
+        ...new Set(
+            page.value?.articles.flatMap((el) => el.articles_id.tags.map((i) => i.toLowerCase()))
+        ),
+    ]);
 
     const DEFAULT_FILTER = 'all';
     const isClient = import.meta.client;
@@ -508,26 +175,30 @@
     onMounted(async () => {
         await nextTick();
 
-        spoilerContentRefs.value.forEach((el) => {
-            const height = el.offsetHeight;
-            heightsCache.set(el, height);
-            el.style.setProperty('--h', `${height}px`);
-        });
+        setTimeout(() => {
+            spoilerContentRefs.value.forEach((el) => {
+                const height = el.offsetHeight;
+                heightsCache.set(el, height);
+                el.style.setProperty('--h', `${height}px`);
+            });
+        }, 300);
     });
 
     onUpdated(async () => {
         await nextTick();
 
-        spoilerContentRefs.value.forEach((el) => {
-            const cached = heightsCache.get(el);
-            if (cached) {
-                el.style.setProperty('--h', `${cached}px`);
-            } else {
-                const height = el.offsetHeight;
-                heightsCache.set(el, height);
-                el.style.setProperty('--h', `${height}px`);
-            }
-        });
+        setTimeout(() => {
+            spoilerContentRefs.value.forEach((el) => {
+                const cached = heightsCache.get(el);
+                if (cached) {
+                    el.style.setProperty('--h', `${cached}px`);
+                } else {
+                    const height = el.offsetHeight;
+                    heightsCache.set(el, height);
+                    el.style.setProperty('--h', `${height}px`);
+                }
+            });
+        }, 300);
     });
 </script>
 
@@ -722,6 +393,11 @@
                     h5,
                     h6 {
                         color: $c-accent;
+                        margin: rem(16) 0;
+                    }
+                    img,
+                    video {
+                        display: none;
                     }
                     table {
                         text-wrap: balance;
@@ -730,6 +406,7 @@
                         font-size: lineScale(24, 20, 480, 1920);
                         color: $c-accent;
                     }
+                    @include lineClamp(7);
                 }
             }
             &-link {

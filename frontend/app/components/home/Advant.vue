@@ -3,8 +3,12 @@
         <div class="home-advant__container">
             <div class="home-advant__sider">
                 <div class="home-advant__sider-wrapper">
-                    <h2 class="home-advant__title">{{ props.title }}</h2>
-                    <div class="home-advant__image" style="--url: url(/img/temp/temp.jpg)"></div>
+                    <h2 class="home-advant__title" v-if="props.title?.length">{{ props.title }}</h2>
+                    <div
+                        class="home-advant__image"
+                        v-if="props.imageUrl"
+                        :style="`--url: url(${props.imageUrl})`"
+                    ></div>
                 </div>
             </div>
             <div class="home-advant__body">
@@ -15,7 +19,7 @@
                     ></div>
                 </div>
                 <ul ref="container" class="home-advant__list">
-                    <li class="home-advant__item" v-for="(item, idx) in tempBlocks" :key="idx">
+                    <li class="home-advant__item" v-for="(item, idx) in props.data" :key="idx">
                         <div class="home-advant__item-counter">{{ `0${idx + 1}` }}</div>
                         <div class="home-advant__item-body">
                             <h3 class="home-advant__item-title">{{ item.title }}</h3>
@@ -31,13 +35,15 @@
 <script setup lang="ts">
     const props = withDefaults(
         defineProps<{
-            title: string;
+            title?: string | null;
+            imageUrl?: string | null;
             data?: {
                 title: string;
                 content: string;
             }[];
         }>(),
         {
+            imageUrl: undefined,
             title: '',
             data: () => [],
         }
@@ -50,77 +56,6 @@
     const visible = computed(() => Math.min(bottom.value, windowHeight.value / 1.3) - top.value);
 
     const progress = computed(() => Math.max(0, visible.value / elHeight.value));
-
-    // temp-data ==================================================
-    const tempBlocks: {
-        title: string;
-        content: string;
-    }[] = [
-        {
-            title: 'Гибкость',
-            content: `
-                <h3>Lorem, ipsum dolor.</h3>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure nulla ducimus
-                    beatae illo? Neque, earum. Lorem ipsum dolor sit amet consectetur.
-                </p>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure nulla ducimus
-                    beatae illo? Neque, earum.
-                </p>
-            `,
-        },
-        {
-            title: 'Ответственность',
-            content: `
-                <h3>Lorem, ipsum dolor.</h3>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure nulla ducimus
-                    beatae illo? Neque, earum.
-                </p>
-                <ol>
-                    <li>Lorem ipsum dolor sit amet.</li>
-                    <li>Lorem ipsum dolor sit amet.</li>
-                    <li>Lorem ipsum dolor sit amet.</li>
-                </ol>
-            `,
-        },
-        {
-            title: 'Честность',
-            content: `
-                <h3>Lorem, ipsum dolor.</h3>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure nulla ducimus
-                    beatae illo? Neque, earum.
-                </p>
-                <ul>
-                    <li>Lorem ipsum dolor sit amet.</li>
-                    <li>Lorem ipsum dolor sit amet.</li>
-                    <li>Lorem ipsum dolor sit amet.</li>
-                </ul>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure nulla ducimus
-                    beatae illo? Neque, earum.
-                </p>
-            `,
-        },
-        {
-            title: 'Опыт',
-            content: `
-                <h3>Lorem, ipsum dolor.</h3>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure nulla ducimus
-                    beatae illo? Neque, earum.
-                </p>
-                <ul>
-                    <li>Lorem ipsum dolor sit amet.</li>
-                    <li>Lorem ipsum dolor sit amet.</li>
-                    <li>Lorem ipsum dolor sit amet.</li>
-                </ul>
-            `,
-        },
-    ];
-    // ============================================================
 </script>
 
 <style lang="scss">

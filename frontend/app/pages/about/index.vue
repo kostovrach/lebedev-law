@@ -2,57 +2,57 @@
     <NuxtLayout name="fill-header">
         <section class="about-hero">
             <picture class="about-hero__cover-container">
-                <img class="about-hero__cover" src="/img/temp/temp.jpg" alt="#" />
+                <img class="about-hero__cover" :src="page?.image_url" :alt="page?.title ?? '#'" />
             </picture>
             <div class="about-hero__container">
                 <div class="about-hero__titlebox">
-                    <h1 class="about-hero__title">Честность. Ответственность. Гибкость.</h1>
-                    <p class="about-hero__subtitle">
-                        Не обещаем невыполнимого, не навязываем лишнего. Отвечаем за сопровождение,
-                        оформление, защиту и обеспечиваем прозрачный документооборот. Гарантируем
-                        высокое качество услуг. Подходим к задаче с разных сторон.
+                    <h1 class="about-hero__title">{{ page?.title }}</h1>
+                    <p class="about-hero__subtitle" v-if="page?.description">
+                        {{ page.description }}
                     </p>
                 </div>
             </div>
         </section>
-        <section class="about-main" v-if="mainPerson">
+        <section class="about-main" v-if="page?.main_partner">
             <div class="about-main__container">
                 <NuxtLink
                     class="about-main__image-container"
                     :to="{
                         name: 'about-person',
-                        params: { person: slugify(mainPerson.name) },
-                        query: { id: mainPerson.id },
+                        params: { person: slugify(page?.main_partner.name) },
+                        query: { id: page?.main_partner.id },
                     }"
                 >
                     <img
                         class="about-main__image"
-                        :src="mainPerson.imageUrl"
-                        :alt="mainPerson.name ?? '#'"
+                        :src="page?.main_partner.image_url ?? '/img/partner-placeholder.png'"
+                        :alt="page?.main_partner.name ?? '#'"
                     />
                 </NuxtLink>
                 <div class="about-main__content">
-                    <div class="about-main__body">
+                    <div class="about-main__body" v-if="page?.main_partner.quote">
                         <span class="about-main__icon"><SvgSprite type="quote" :size="56" /></span>
-                        <p class="about-main__text">{{ mainPerson.quote }}</p>
+                        <p class="about-main__text">{{ page?.main_partner.quote }}</p>
                     </div>
                     <div class="about-main__titlebox">
                         <picture class="about-main__compact-image-container">
                             <img
                                 class="about-main__compact-image"
-                                :src="mainPerson.imageUrl"
-                                :alt="mainPerson.name"
+                                :src="
+                                    page?.main_partner.image_url ?? '/img/partner-placeholder.png'
+                                "
+                                :alt="page?.main_partner.name"
                             />
                         </picture>
-                        <h2 class="about-main__title">{{ mainPerson.name }}</h2>
-                        <p class="about-main__subtitle">{{ mainPerson.post }}</p>
+                        <h2 class="about-main__title">{{ page?.main_partner.name }}</h2>
+                        <p class="about-main__subtitle">{{ page?.main_partner.post }}</p>
                     </div>
                     <NuxtLink
                         class="about-main__button"
                         :to="{
                             name: 'about-person',
-                            params: { person: slugify(mainPerson.name) },
-                            query: { id: mainPerson.id },
+                            params: { person: slugify(page?.main_partner.name) },
+                            query: { id: page?.main_partner.id },
                         }"
                     >
                         <span>Компетенции</span>
@@ -61,10 +61,15 @@
                 </div>
             </div>
         </section>
-        <ContentBlock class="about-list" tag="ПАРТНЁРЫ" title="Знакомьтесь — наша команда">
+        <ContentBlock
+            class="about-list"
+            :tag="page?.list_tag ?? ''"
+            :title="page?.list_title ?? ''"
+            v-if="partners?.length && partners?.length > 1"
+        >
             <div class="about-list__body">
                 <NuxtLink
-                    v-for="person in persons?.filter((el) => el.main !== true)"
+                    v-for="person in partners?.filter((el) => el.id !== page?.main_partner.id)"
                     :key="person.id"
                     class="about-list__item"
                     :to="{
@@ -78,7 +83,7 @@
                             <picture class="about-list__item-image-container">
                                 <img
                                     class="about-list__item-image"
-                                    :src="person.imageUrl"
+                                    :src="person.image_url ?? '/img/partner-placeholder.png'"
                                     :alt="person.name ?? '#'"
                                 />
                             </picture>
@@ -97,9 +102,30 @@
 </template>
 
 <script setup lang="ts">
-    const { persons } = usePersonsStore();
+    import type { IPerson } from '~~/interfaces/person';
+    interface ITeamPage {
+        id: number | string;
+        date_updated: string | null;
+        image: string;
+        image_url: string;
+        title: string;
+        description: string | null;
+        main_partner: IPerson;
+        list_tag: string | null;
+        list_title: string;
+        page_enabled: boolean;
+    }
 
-    const mainPerson = computed(() => persons?.find((el) => el.main));
+    const { content: page } = useCms<ITeamPage>('team', ['main_partner.*']);
+
+    const { content: partners } = useCms<IPerson[]>('partners', [
+        'articles.*',
+        'articles.articles_id.*',
+        'docs.*',
+        'docs.directus_files_id.*',
+        ' gallery.*',
+        'gallery.directus_files_id.*',
+    ]);
 </script>
 
 <style scoped lang="scss">

@@ -3,13 +3,16 @@
         <div class="connection-secondary__container">
             <div class="connection-secondary__wrapper">
                 <picture class="connection-secondary__image-container">
-                    <img class="connection-secondary__image" src="/img/temp/temp.jpg" alt="#" />
+                    <img
+                        class="connection-secondary__image"
+                        :src="component?.image_url ?? '/img/temp/temp.jpg'"
+                        alt="#"
+                    />
                 </picture>
                 <div class="connection-secondary__body">
-                    <h3 class="connection-secondary__title">Нужна юридическая помощь?</h3>
-                    <p class="connection-secondary__desc">
-                        Заполните заявку на сайте с описанием Вашей ситуации или свяжитесь с нами
-                        через Telegram, чтобы получить бесплатную консультацию
+                    <h3 class="connection-secondary__title">{{ component?.title }}</h3>
+                    <p class="connection-secondary__desc" v-if="component?.description">
+                        {{ component?.description }}
                     </p>
                     <div class="connection-secondary__controls">
                         <button
@@ -21,8 +24,9 @@
                             <span><SvgSprite type="arrow" :size="18" /></span>
                         </button>
                         <a
+                            v-if="contact?.tg"
                             class="connection-secondary__link"
-                            href="https://example.com"
+                            :href="contact.tg.trim().replace(/\s+/g, '')"
                             target="_blank"
                             rel="noopener noreferrer"
                         >
@@ -39,6 +43,16 @@
 <script setup lang="ts">
     import { useModal } from 'vue-final-modal';
     import { ModalsForm } from '#components';
+    import type { IContact } from '~~/interfaces/contact';
+
+    interface IContactSecondary {
+        id: string | number;
+        date_updated: string | null;
+        title: string;
+        image: string | null;
+        image_url?: string | null;
+        description: string | null;
+    }
 
     const props = withDefaults(
         defineProps<{
@@ -48,6 +62,9 @@
             fill: false,
         }
     );
+
+    const { content: component } = useCms<IContactSecondary>('contact_secondary');
+    const { content: contact } = useCms<IContact>('contact');
 
     const { open: openForm, close: closeForm } = useModal({
         component: ModalsForm,

@@ -2,11 +2,15 @@
     <NuxtLayout>
         <section class="docs">
             <div class="docs__container">
-                <picture class="docs__cover-container">
-                    <img class="docs__cover" src="/img/temp/temp.jpg" alt="Документы" />
+                <picture class="docs__cover-container" v-if="page?.image_url">
+                    <img
+                        class="docs__cover"
+                        :src="page?.image_url"
+                        :alt="page.title ?? 'Документы'"
+                    />
                 </picture>
                 <div class="docs__head">
-                    <h1 class="docs__title">Образцы документов</h1>
+                    <h1 class="docs__title">{{ page?.title }}</h1>
                     <div class="docs__controls">
                         <div class="docs__chips">
                             <button
@@ -19,28 +23,29 @@
                             >
                                 <span>Все</span>
                             </button>
-                            <button
-                                v-for="chip in docsAttrs"
-                                :key="chip"
-                                :class="[
-                                    'docs__chips-item',
-                                    { active: activeAttr === slugify(chip) },
-                                ]"
-                                type="button"
-                                @click="setActiveAttr(slugify(chip))"
-                            >
-                                <span>{{ chip }}</span>
-                            </button>
+                            <ClientOnly>
+                                <button
+                                    v-for="chip in docsAttrs"
+                                    :key="chip"
+                                    :class="[
+                                        'docs__chips-item',
+                                        { active: activeAttr === slugify(chip) },
+                                    ]"
+                                    type="button"
+                                    @click="setActiveAttr(slugify(chip))"
+                                >
+                                    <span>{{ chip }}</span>
+                                </button>
+                            </ClientOnly>
                         </div>
                         <label class="docs__searchbar" for="docs-searchbar">
                             <input
-                                ref="inputRef"
                                 v-model="inputModel"
                                 id="docs-searchbar"
                                 class="docs__searchbar-input"
                                 name="docs-searchbar"
                                 placeholder="Поиск"
-                                @input="search"
+                                @input="doSearch"
                             />
                             <span class="docs__searchbar-icon">
                                 <SvgSprite type="search" :size="24" />
@@ -48,26 +53,28 @@
                         </label>
                     </div>
                 </div>
-                <ul class="docs__body" v-if="searchResult?.length">
+                <ul class="docs__body">
                     <li
-                        v-for="item in searchResult"
+                        v-for="item in documents ?? docs"
                         :key="item.id"
                         class="docs__item"
                         :title="item.title"
                         v-show="
-                            item.attributes.some((el) => slugify(el) === activeAttr) ||
+                            item.tags.some((el) => slugify(el) === activeAttr) ||
                             activeAttr === DEFAULT_ATTR
                         "
                     >
                         <div class="docs__item-wrapper">
                             <div class="docs__item-titlebox">
-                                <span class="docs__item-tag">{{ `.${item.type}` }}</span>
+                                <span class="docs__item-tag">
+                                    {{ normalizeFileType(item.file.type) }}
+                                </span>
                                 <h2 class="docs__item-title">{{ item.title }}</h2>
                             </div>
                             <a
                                 class="docs__item-link"
-                                href="/img/temp/temp.jpg"
-                                download="temp.jpg"
+                                :href="`/api/cms/assets/${item.file.id}`"
+                                :download="`${item.title} | Лебедев и партнеры`"
                             >
                                 <span>Скачать</span>
                                 <span>
@@ -77,32 +84,59 @@
                         </div>
                     </li>
                 </ul>
-                <SearchError v-else />
+                <SearchError v-if="isSearchEmpty" />
             </div>
         </section>
     </NuxtLayout>
 </template>
 
 <script setup lang="ts">
-    const docsStore = useDocsStore();
-    const { docsAttrs } = storeToRefs(docsStore);
-    const { docsList, searchDocFuzzy } = docsStore;
+    import type { IDocument } from '~~/interfaces/document';
 
+    interface IDocsPage {
+        id: number | string;
+        date_updated: string | null;
+        image: string | null;
+        image_url?: string;
+        title: string;
+    }
+
+    // Data ===========================================================
+    const { content: page } = useCms<IDocsPage>('docs_page');
+    const { content: docs } = useCms<IDocument[]>('docs', ['file.*']);
+
+    const documents = ref<IDocument[] | null>(null);
+
+    const { search } = useFuseSearch<IDocument>({
+        keys: ['title', 'tags'],
+        threshold: 0.35,
+        ignoreLocation: true,
+        includeScore: false,
+    });
+    // ================================================================
+
+    // State ==========================================================
     const DEFAULT_ATTR = 'all';
 
     const activeAttr = ref<string>(DEFAULT_ATTR);
-    const inputRef = ref<HTMLInputElement | null>(null);
+    const docsAttrs = computed(() => [
+        ...new Set(docs.value?.flatMap((el) => el.tags.map((i) => i.toLowerCase()))),
+    ]);
     const inputModel = ref<string>('');
-    const searchResult = ref<IDocument[] | null>(docsList);
+    const isSearchEmpty = ref(false);
+    // ================================================================
 
+    // Methods ========================================================
     const setActiveAttr = (attr: string) => {
         if (activeAttr.value !== attr) {
             activeAttr.value = attr;
         } else return;
     };
-    const search = useDebounceFn(async () => {
-        searchResult.value = await searchDocFuzzy(inputModel.value);
+    const doSearch = useDebounceFn(async () => {
+        documents.value = await search(inputModel.value, docs.value ?? []);
+        isSearchEmpty.value = documents.value.length < 1;
     }, 300);
+    // ================================================================
 </script>
 
 <style scoped lang="scss">

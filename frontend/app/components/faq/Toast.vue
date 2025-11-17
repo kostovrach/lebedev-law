@@ -3,19 +3,17 @@
         <button class="faq-toast__close-btn" type="button" @click="isShow = false">
             <SvgSprite type="cross" :size="24" />
         </button>
-        <p class="faq-toast__title">Не нашли ответа на свой вопрос?</p>
-        <p class="faq-toast__text">
-            Заполните заявку на сайте с описанием Вашей ситуации или свяжитесь с нами через
-            Telegram, чтобы получить бесплатную консультацию
-        </p>
+        <p class="faq-toast__title">{{ props.title }}</p>
+        <p class="faq-toast__text">{{ props.description }}</p>
         <div class="faq-toast__controls">
             <button class="faq-toast__button" type="button">
                 <span>Заполнить заявку</span>
                 <span><SvgSprite type="arrow" :size="18" /></span>
             </button>
             <a
+                v-if="contact?.tg"
                 class="faq-toast__link"
-                href="https://example.com"
+                :href="contact.tg.trim().replace(/\s+/g, '')"
                 target="_blank"
                 rel="noopener noreferrer"
             >
@@ -27,6 +25,21 @@
 </template>
 
 <script setup lang="ts">
+    import type { IContact } from '~~/interfaces/contact';
+
+    const props = withDefaults(
+        defineProps<{
+            title: string;
+            description: string;
+        }>(),
+        {
+            title: '',
+            description: '',
+        }
+    );
+
+    const { content: contact } = useCms<IContact>('contact');
+
     const isShow = ref(false);
 
     onMounted(() => {

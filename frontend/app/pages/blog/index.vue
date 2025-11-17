@@ -4,10 +4,10 @@
             <div class="blog__container">
                 <div class="blog__head">
                     <picture class="blog__cover-container">
-                        <img class="blog__cover" src="/img/temp/temp.jpg" alt="#" />
+                        <img class="blog__cover" :src="page?.image_url" :alt="page?.title ?? '#'" />
                     </picture>
                     <div class="blog__titlebox">
-                        <h1 class="blog__title">Статьи</h1>
+                        <h1 class="blog__title">{{ page?.title }}</h1>
                         <div class="blog__chips">
                             <button
                                 :class="[
@@ -33,11 +33,7 @@
                             </button>
                         </div>
                     </div>
-                    <p class="blog__desc">
-                        В этом разделе вы найдете актуальные разборы судебной практики нашими
-                        адвокатами, обновления российского законодательства, полезные юридические
-                        советы и новости о жизни нашего бюро.
-                    </p>
+                    <p class="blog__desc" v-if="page?.subtitle">{{ page?.subtitle }}</p>
                 </div>
                 <div class="blog__body">
                     <NuxtLink
@@ -56,7 +52,12 @@
                     >
                         <div class="blog__item-wrapper">
                             <span class="blog__item-tag">
-                                {{ normalizeDate(article.date_created, false) }}
+                                {{
+                                    normalizeDate(
+                                        article.date_updated ?? article.date_created,
+                                        false
+                                    )
+                                }}
                             </span>
                             <div class="blog__item-content">
                                 <h2 class="blog__item-title" :title="article.title">
@@ -66,10 +67,10 @@
                                     {{ article.summary }}
                                 </p>
                             </div>
-                            <span class="blog__item-link">
+                            <div class="blog__item-link">
                                 <span>Читать</span>
                                 <span><SvgSprite type="arrow" :size="14" /></span>
-                            </span>
+                            </div>
                         </div>
                     </NuxtLink>
                 </div>
@@ -79,10 +80,23 @@
 </template>
 
 <script setup lang="ts">
-    const blogStore = useBlogStore();
+    import type { IArticle } from '~~/interfaces/article';
 
-    const { articles } = blogStore;
-    const { articleAttrs } = storeToRefs(blogStore);
+    interface IBlogPage {
+        id: number | string;
+        date_updated: string | null;
+        image: string;
+        image_url: string;
+        title: string;
+        subtitle: string | null;
+    }
+
+    const { content: articles } = useCms<IArticle[]>('articles');
+    const { content: page } = useCms<IBlogPage>('blog');
+
+    const articleAttrs = computed(() => [
+        ...new Set(articles.value?.flatMap((el) => el.tags.map((i) => i.toLowerCase()))),
+    ]);
 
     const DEFAULT_FILTER = 'all';
     const activeFilter = ref<string>(DEFAULT_FILTER);

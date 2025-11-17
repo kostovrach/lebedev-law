@@ -2,7 +2,7 @@
     <section class="services-hero">
         <div class="services-hero__container">
             <h1 class="services-hero__title">{{ props.title }}</h1>
-            <p class="services-hero__subtitle" v-if="props.subtitle">{{ props.subtitle }}</p>
+            <p class="services-hero__subtitle" v-if="props.subtitle.length">{{ props.subtitle }}</p>
             <button class="services-hero__button" type="button" @click="openForm">
                 <span>{{ props.buttonText ?? 'Обсудить задачу' }}</span>
                 <span><SvgSprite type="arrow" :size="14" /></span>

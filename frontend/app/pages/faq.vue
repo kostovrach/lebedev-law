@@ -1,26 +1,23 @@
 <template>
     <NuxtLayout>
         <section class="faq">
-            <FaqToast />
+            <FaqToast :title="page?.hint_title ?? ''" :description="page?.hint_description ?? ''" />
             <div class="faq__container">
                 <div class="faq__head">
-                    <picture class="faq__image-container">
-                        <img class="faq__image" src="/img/temp/temp.jpg" alt="Ответы на вопросы" />
+                    <picture class="faq__image-container" v-if="page?.image_url">
+                        <img
+                            class="faq__image"
+                            :src="page.image_url"
+                            :alt="page.title ?? 'Ответы на вопросы'"
+                        />
                     </picture>
-                    <h1 class="faq__title">Ваши вопросы — наши ответы</h1>
-                    <div class="faq__desc">
-                        <p>
-                            Если у Вас срочный вопрос, который нужно решить прямо сейчас — тогда
-                            свяжитесь со мной в любое время по телефону
-                            <a href="#">+7 917 151-82-72</a>
-                        </p>
-                    </div>
+                    <h1 class="faq__title">{{ page?.title }}</h1>
+                    <div class="faq__desc" v-if="page?.subtitle" v-html="page.subtitle"></div>
                 </div>
                 <article class="faq__body">
                     <aside class="faq__controls">
                         <label class="faq__searchbar" for="faq-searchbar">
                             <input
-                                ref="inputRef"
                                 v-model="inputModel"
                                 id="faq-searchbar"
                                 class="faq__searchbar-input"
@@ -33,38 +30,36 @@
                                 <SvgSprite type="search" :size="28" />
                             </span>
                         </label>
+                    </aside>
+                    <div class="faq__content">
                         <nav class="faq__chips">
                             <a
                                 class="faq__chips-item"
-                                v-for="(chip, idx) in searchResult"
+                                v-for="(chip, idx) in searchResult ?? issues"
                                 :key="idx"
                                 :href="`#${slugify(chip.title)}`"
                             >
                                 <span>
                                     {{ chip.title }}
                                 </span>
-                                <span><SvgSprite type="arrow" :size="16" /></span>
                             </a>
                         </nav>
-                    </aside>
-                    <div class="faq__content">
-                        <template v-if="searchResult?.length">
-                            <FaqIssueSection
-                                v-for="issue in searchResult"
-                                :key="issue.id"
-                                :id="slugify(issue.title)"
-                                class="faq__issue"
-                                :is-search="inputModel ? true : false"
-                                :title="issue.title"
-                                :blocks="
-                                    issue.blocks.map((el) => ({
-                                        title: el.title,
-                                        content: el.content,
-                                    }))
-                                "
-                            ></FaqIssueSection>
-                        </template>
-                        <SearchError v-else />
+                        <FaqIssueSection
+                            v-for="issue in searchResult ?? issues"
+                            :key="issue.id"
+                            :id="slugify(issue.title)"
+                            class="faq__issue"
+                            :is-search="inputModel ? true : false"
+                            :title="issue.title"
+                            :blocks="
+                                issue.blocks.map((el) => ({
+                                    title: el.title,
+                                    content: el.content,
+                                    article: el.article?.key,
+                                }))
+                            "
+                        ></FaqIssueSection>
+                        <SearchError v-if="isSearchEmpty" />
                     </div>
                 </article>
             </div>
@@ -74,14 +69,31 @@
 </template>
 
 <script setup lang="ts">
-    const { issuesList, searchIssueFuzzy } = useIssuesStore();
+    interface IFaqPage {
+        id: string | number;
+        date_updated: string | null;
+        image: string | null;
+        image_url?: string;
+        title: string;
+        subtitle: string | null;
+        hint_title: string;
+        hint_description: string;
+    }
 
-    const inputRef = ref<HTMLInputElement | null>(null);
+    const { setIssues, searchIssueFuzzy } = useIssuesStore();
+
+    const { content: issues } = useCms<IFaqIssue[]>('issues');
+    setIssues(issues.value);
+
+    const { content: page } = useCms<IFaqPage>('faq');
+
     const inputModel = ref<string>('');
-    const searchResult = ref<IFaqIssue[] | null>(issuesList);
+    const searchResult = ref<IFaqIssue[] | null>(null);
+    const isSearchEmpty = ref(false);
 
     const search = useDebounceFn(async () => {
         searchResult.value = await searchIssueFuzzy(inputModel.value);
+        isSearchEmpty.value = searchResult.value.length < 1;
     }, 300);
 </script>
 
@@ -134,24 +146,28 @@
             @include searchbar;
         }
         &__chips {
+            width: 100%;
+            align-self: center;
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
             gap: rem(8);
             max-width: 110ch;
+            @media (min-width: 768px) {
+                position: sticky;
+                z-index: 8;
+                top: rem(82);
+            }
             &-item {
                 display: flex;
                 align-items: center;
                 gap: rem(4);
                 border: rem(1) solid rgba($c-text, 0.25);
-                @include chip($font-size: lineScale(20, 18, 480, 1920));
-                > span > svg {
-                    rotate: 45deg;
-                    translate: 0 rem(3);
-                }
+                @include chip();
             }
         }
         &__content {
+            position: relative;
             display: flex;
             flex-direction: column;
             gap: lineScale(128, 96, 480, 1920);

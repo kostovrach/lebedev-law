@@ -4,24 +4,31 @@
             <div class="map-primary__wrapper">
                 <div class="map-primary__body">
                     <div class="map-primary__titlebox">
-                        <h2 class="map-primary__title">{{ props.title }}</h2>
+                        <h2 class="map-primary__title">{{ component?.title }}</h2>
                         <NuxtLink class="map-primary__link" :to="{ name: 'contact' }">
                             <span>Все города с нашими представительствами</span>
                             <span><SvgSprite type="arrow" :size="16" /></span>
                         </NuxtLink>
                     </div>
-                    <RateWidgets class="map-primary__widgets" />
+                    <RateWidgets
+                        class="map-primary__widgets"
+                        :yandex_rate="component?.yandex_rate"
+                        :yandex_count="component?.yandex_count"
+                        :yandex_link="component?.yandex_link"
+                        :google_rate="component?.google_rate"
+                        :google_count="component?.google_count"
+                        :google_link="component?.google_link"
+                        :gis_rate="component?.gis_rate"
+                        :gis_count="component?.gis_count"
+                        :gis_link="component?.gis_link"
+                    />
                 </div>
                 <div class="map-primary__map">
                     <MapWrapper
                         :map-center="[30.28, 55.22]"
                         :zoom="5"
                         :markers="
-                            markers.map((el) => ({
-                                coordinates: el.coordinates,
-                                title: el.title,
-                                body: el.body,
-                            }))
+                            component?.location.coordinates.map((el) => ({ coordinates: el }))
                         "
                     />
                 </div>
@@ -33,14 +40,28 @@
 <script setup lang="ts">
     import type { LngLat } from '@yandex/ymaps3-types';
 
-    const props = withDefaults(
-        defineProps<{
-            title: string;
-        }>(),
-        {
-            title: '',
-        }
-    );
+    const { content: component } = useCms<{
+        id: string | number;
+        date_updated: string | null;
+        title: string;
+
+        yandex_rate: number | null;
+        yandex_count: number | null;
+        yandex_link: string | null;
+
+        google_rate: number | null;
+        google_count: number | null;
+        google_link: string | null;
+
+        gis_rate: number | null;
+        gis_count: number | null;
+        gis_link: string | null;
+
+        location: {
+            type: string;
+            coordinates: LngLat[];
+        };
+    }>('map_component');
 
     const markers: {
         coordinates: LngLat;

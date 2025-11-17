@@ -1,5 +1,5 @@
 <template>
-    <section class="services-about">
+    <section class="services-about" v-if="props.slides.length >= 3">
         <div class="services-about__container">
             <h3 class="services-about__title">{{ props.title }}</h3>
             <div class="services-about__body">

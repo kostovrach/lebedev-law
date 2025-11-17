@@ -5,7 +5,13 @@
                 <aside class="contact__sider">
                     <div class="contact__sider-wrapper">
                         <div class="contact__map">
-                            <MapWrapper />
+                            <MapWrapper
+                                :markers="
+                                    contact?.location?.coordinates.map((el) => ({
+                                        coordinates: el,
+                                    }))
+                                "
+                            />
                         </div>
                         <a
                             class="contact__map-button"
@@ -20,56 +26,41 @@
                 </aside>
                 <div class="contact__body">
                     <div class="contact__titlebox">
-                        <h1 class="contact__title">Контакты</h1>
-                        <p class="contact__desc">
-                            Мы оказываем консультационные услуги как очно в офисах по всей России,
-                            так и удаленно.
+                        <h1 class="contact__title">{{ page?.title ?? 'Контакты' }}</h1>
+                        <p class="contact__desc" v-if="page?.description">
+                            {{ page?.description }}
                         </p>
                         <ul class="contact__info">
-                            <li class="contact__info-item">
+                            <li class="contact__info-item" v-if="contact?.address">
                                 <h3>Головной офис</h3>
-                                <p>443080, г. Самара, проспект Карла Маркса, дом 192, офис 614</p>
-                            </li>
-                            <li class="contact__info-item">
-                                <h3>Рабочие часы</h3>
-                                <p>ПН-ПТ: 10:00 - 19:00</p>
-                                <p>ПН-ПТ: 10:00 - 19:00</p>
+                                <p>{{ contact.address }}</p>
                             </li>
                             <li class="contact__info-item">
                                 <h3>Контакты</h3>
-                                <p><a href="#">+7 917 151-82-72</a></p>
-                                <p><a href="#">lebedev@team-lebedev.ru</a></p>
+                                <p>
+                                    <a :href="`tel:${contact?.phone.trim().replace(/\s+/g, '')}`">
+                                        {{ contact?.phone }}
+                                    </a>
+                                </p>
+                                <p v-if="contact?.email">
+                                    <a
+                                        :href="`mailto:${contact?.email.trim().replace(/\s+/g, '')}`"
+                                    >
+                                        {{ contact?.email }}
+                                    </a>
+                                </p>
                             </li>
                         </ul>
                         <div class="contact__controls">
                             <div class="contact__socials">
                                 <a
-                                    href="http://example.com"
+                                    v-for="(link, idx) in page?.links"
+                                    :key="idx"
+                                    :href="link.link.trim().replace(/\s+/g, '')"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    Вконтакте
-                                </a>
-                                <a
-                                    href="http://example.com"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Одноклассники
-                                </a>
-                                <a
-                                    href="http://example.com"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Telegram
-                                </a>
-                                <a
-                                    href="http://example.com"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Whatsapp
+                                    {{ link.title }}
                                 </a>
                             </div>
                             <div class="contact__button-container">
@@ -84,11 +75,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="contact__content">
-                        <h2 class="contact__content-title">
-                            Защищаем интересы клиентов в 15+ городах России
+                    <div class="contact__content" v-if="page?.content">
+                        <h2 class="contact__content-title" v-if="page?.subtitle">
+                            {{ page?.subtitle }}
                         </h2>
-                        <div class="contact__content-inner" v-html="tempContent"></div>
+                        <div class="contact__content-inner" v-html="page.content"></div>
                     </div>
                 </div>
             </div>
@@ -98,8 +89,27 @@
 </template>
 
 <script setup lang="ts">
+    import type { IContact } from '~~/interfaces/contact';
     import { useModal } from 'vue-final-modal';
     import { ModalsForm } from '#components';
+
+    interface IContactPage {
+        id: string | number;
+        date_updated: string | null;
+        title: string;
+        description: string | null;
+        links:
+            | {
+                  title: string;
+                  link: string;
+              }[]
+            | null;
+        subtitle: string | null;
+        content: string | null;
+    }
+
+    const { content: contact } = useCms<IContact>('contact');
+    const { content: page } = useCms<IContactPage>('contact_page');
 
     const { open: openForm, close: closeForm } = useModal({
         component: ModalsForm,
@@ -109,78 +119,6 @@
             },
         },
     });
-    // temp-data =============================
-    const tempContent = `
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>МОСква</th>
-                                        <th>Рабочие часы</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>г. Москва, пр.. Карла Маркса, 78, 443072, Россия</td>
-                                        <td>
-                                            <p>ПН-ПТ: 10:00 - 19:00</p>
-                                            <p>СБ-ВС: 12:00 - 18:00</p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Владивосток</th>
-                                        <th>Рабочие часы</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>г. Владивосток, ул. Советская, 21, 443028, Россия</td>
-                                        <td>
-                                            <p>ПН-ПТ: 10:00 - 19:00</p>
-                                            <p>СБ: 10:00 - 16:00, ВС: выходной</p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>МОСква</th>
-                                        <th>Рабочие часы</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>г. Москва, пр.. Карла Маркса, 78, 443072, Россия</td>
-                                        <td>
-                                            <p>ПН-ПТ: 10:00 - 19:00</p>
-                                            <p>СБ-ВС: 12:00 - 18:00</p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Владивосток</th>
-                                        <th>Рабочие часы</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>г. Владивосток, ул. Советская, 21, 443028, Россия</td>
-                                        <td>
-                                            <p>ПН-ПТ: 10:00 - 19:00</p>
-                                            <p>СБ: 10:00 - 16:00, ВС: выходной</p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-        `;
-    // =======================================
 </script>
 
 <style lang="scss">
@@ -283,7 +221,7 @@
                 '. button'
                 'socials button';
             gap: 0 rem(32);
-            translate: 0 rem(-64);
+            translate: 0 rem(-32);
             pointer-events: none;
         }
         &__socials {

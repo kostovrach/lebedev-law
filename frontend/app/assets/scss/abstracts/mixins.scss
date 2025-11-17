@@ -114,14 +114,15 @@
     @include arrow-translate;
 }
 
-@mixin chip($font-size: lineScale(16, 14, 480, 1920)) {
+@mixin chip($font-size: lineScale(16, 14, 480, 1920), $init-color: $c-EEF1F4) {
     cursor: pointer;
     width: fit-content;
+    text-transform: lowercase;
     font-size: $font-size;
     padding: rem(6) rem(16);
     border-radius: rem(32);
     text-align: center;
-    @include hover-curtain($init-color: $c-EEF1F4);
+    @include hover-curtain($init-color: $init-color);
     &.active {
         color: $c-FFFFFF;
         pointer-events: none;
@@ -260,6 +261,7 @@
     a {
         color: $c-accent;
         text-decoration: underline;
+        white-space: nowrap;
         @media (pointer: fine) {
             &:hover {
                 text-decoration: none;
