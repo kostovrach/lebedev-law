@@ -1,0 +1,38 @@
+name: Nuxt Build
+
+on:
+    push:
+        branches: ['main']
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: 'pnpm'
+                  cache-dependency-path: frontend/pnpm-lock.yaml
+
+            - name: Install pnpm
+              run: npm install -g pnpm
+
+            - name: Install dependencies
+              working-directory: frontend
+              run: pnpm install --frozen-lockfile
+
+            - name: Build Nuxt
+              working-directory: frontend
+              run: pnpm build
+
+            - name: Upload .output artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: nuxt-output
+                  path: frontend/.output
+                  compression-level: 9
