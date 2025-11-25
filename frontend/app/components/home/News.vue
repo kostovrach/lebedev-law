@@ -73,9 +73,9 @@
             margin-top: rem(64);
         }
         &__item {
+            cursor: pointer;
             flex: 1 1 rem(380);
             max-width: calc(50% - rem(8));
-            cursor: pointer;
             background-color: $c-FFFFFF;
             @include hover-curtain($init-color: $c-EEF1F4);
             &-wrapper {
@@ -116,6 +116,19 @@
                 > span:has(svg) {
                     translate: 0 rem(2);
                 }
+            }
+        }
+    }
+
+    @media (max-width: 630px){
+        .home-news {
+            &__list {
+                display: flex;
+                flex-direction: column;
+            }
+            &__item {
+                max-width: initial;
+                flex: initial;
             }
         }
     }

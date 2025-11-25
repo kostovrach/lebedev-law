@@ -20,13 +20,61 @@
                     </ul>
                     <nav class="footer__map">
                         <NuxtLink
-                            v-for="(link, idx) in navItems"
-                            :key="idx"
-                            class="footer__map-link"
-                            :to="{ name: link.path.name, params: link.path.params }"
-                            v-show="link.path.name !== route.name"
+                            :to="{ name: 'services' }"
+                            :class="['footer__map-link', { current: route.name === 'services' }]"
                         >
-                            {{ link.label }}
+                            Услуги
+                        </NuxtLink>
+                        <NuxtLink
+                            v-if="teamPage?.main_partner && teamPage?.page_enabled"
+                            :to="{ name: 'about' }"
+                            :class="['footer__map-link', { current: route.name === 'about' }]"
+                        >
+                            Команда
+                        </NuxtLink>
+                        <NuxtLink
+                            v-if="teamPage?.main_partner && !teamPage?.page_enabled"
+                            :to="{
+                                name: 'about-person',
+                                params: { person: slugify(teamPage?.main_partner.name as string) },
+                                query: { id: teamPage?.main_partner.id },
+                            }"
+                            :class="[
+                                'footer__map-link',
+                                { current: route.name === 'about-person' },
+                            ]"
+                        >
+                            Обо мне
+                        </NuxtLink>
+                        <NuxtLink
+                            :to="{ name: 'cases' }"
+                            :class="['footer__map-link', { current: route.name === 'cases' }]"
+                        >
+                            Практика
+                        </NuxtLink>
+                        <NuxtLink
+                            :to="{ name: 'docs' }"
+                            :class="['footer__map-link', { current: route.name === 'docs' }]"
+                        >
+                            Документы
+                        </NuxtLink>
+                        <NuxtLink
+                            :to="{ name: 'blog' }"
+                            :class="['footer__map-link', { current: route.name === 'blog' }]"
+                        >
+                            Статьи
+                        </NuxtLink>
+                        <NuxtLink
+                            :to="{ name: 'faq' }"
+                            :class="['footer__map-link', { current: route.name === 'faq' }]"
+                        >
+                            Вопросы
+                        </NuxtLink>
+                        <NuxtLink
+                            :to="{ name: 'contact' }"
+                            :class="['footer__map-link', { current: route.name === 'contact' }]"
+                        >
+                            Контакты
                         </NuxtLink>
                     </nav>
                 </div>
@@ -118,12 +166,14 @@
 </template>
 
 <script setup lang="ts">
-    import type { RouteParamsRawGeneric } from 'vue-router';
     import type { IContact } from '~~/interfaces/contact';
     import type { IPolicy } from '~~/interfaces/policy';
+    import type { ITeamPage } from '~~/interfaces/team-page';
 
     import { ModalsDocs } from '#components';
     import { useModal } from 'vue-final-modal';
+
+    
 
     interface IFooter {
         id: string | number;
@@ -138,6 +188,7 @@
     const { content: contact } = useCms<IContact>('contact');
     const { content: policies, status: policiesStatus } = useCms<IPolicy[]>('policies');
     const { content: component } = useCms<IFooter>('footer');
+    const { content: teamPage } = useCms<ITeamPage>('team', ['main_partner.*']);
 
     function openDocsModal(title: string, dateUpdated: string, content: string) {
         const { open: openModal, close: closeModal } = useModal({
@@ -154,63 +205,6 @@
         });
         openModal();
     }
-
-    const navItems: {
-        label: string;
-        path: {
-            name: string;
-            params?: RouteParamsRawGeneric;
-        };
-    }[] = [
-        {
-            label: 'Главная',
-            path: {
-                name: 'index',
-            },
-        },
-        {
-            label: 'Команда',
-            path: {
-                name: 'about',
-            },
-        },
-        {
-            label: 'Услуги',
-            path: {
-                name: 'services',
-            },
-        },
-        {
-            label: 'Контакты',
-            path: {
-                name: 'contact',
-            },
-        },
-        {
-            label: 'Практика',
-            path: {
-                name: 'cases',
-            },
-        },
-        {
-            label: 'Документы',
-            path: {
-                name: 'docs',
-            },
-        },
-        {
-            label: 'Статьи',
-            path: {
-                name: 'blog',
-            },
-        },
-        {
-            label: 'Вопросы',
-            path: {
-                name: 'faq',
-            },
-        },
-    ];
 </script>
 
 <style scoped lang="scss">
@@ -296,6 +290,9 @@
             gap: rem(8) rem(32);
             &-link {
                 @include hover-blick-line;
+                &.current {
+                    display: none;
+                }
             }
         }
         &__contact {

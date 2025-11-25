@@ -487,4 +487,16 @@
             }
         }
     }
+
+    @media (max-width: 768px){
+        .cases {
+            &__item {
+                &-info {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+            }
+        }
+    }
 </style>

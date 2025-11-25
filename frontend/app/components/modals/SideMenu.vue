@@ -11,53 +11,106 @@
                 </button>
                 <nav class="modal-menu__nav">
                     <NuxtLink
-                        v-for="(link, idx) in navLinks"
-                        :key="idx"
-                        :class="['modal-menu__link', { current: link.path.name === route.name }]"
-                        :to="{
-                            name: link.path.name,
-                            params: link.path.params,
-                            query: link.path.query,
-                        }"
+                        :to="{ name: 'services' }"
+                        :class="['modal-menu__link', { current: route.name === 'services' }]"
                     >
-                        <span>{{ link.label }}</span>
+                        <span>Услуги</span>
+                    </NuxtLink>
+                    <NuxtLink
+                        v-if="teamPage?.main_partner && teamPage?.page_enabled"
+                        :to="{ name: 'about' }"
+                        :class="['modal-menu__link', { current: route.name === 'about' }]"
+                    >
+                        <span>Команда</span>
+                    </NuxtLink>
+                    <NuxtLink
+                        v-if="teamPage?.main_partner && !teamPage?.page_enabled"
+                        :to="{
+                            name: 'about-person',
+                            params: { person: slugify(teamPage?.main_partner.name as string) },
+                            query: { id: teamPage?.main_partner.id },
+                        }"
+                        :class="['modal-menu__link', { current: route.name === 'about-person' }]"
+                    >
+                        <span>Обо мне</span>
+                    </NuxtLink>
+                    <NuxtLink
+                        :to="{ name: 'cases' }"
+                        :class="['modal-menu__link', { current: route.name === 'cases' }]"
+                    >
+                        <span>Практика</span>
+                    </NuxtLink>
+                    <NuxtLink
+                        :to="{ name: 'docs' }"
+                        :class="['modal-menu__link', { current: route.name === 'docs' }]"
+                    >
+                        <span>Документы</span>
+                    </NuxtLink>
+                    <NuxtLink
+                        :to="{ name: 'blog' }"
+                        :class="['modal-menu__link', { current: route.name === 'blog' }]"
+                    >
+                        <span>Статьи</span>
+                    </NuxtLink>
+                    <NuxtLink
+                        :to="{ name: 'faq' }"
+                        :class="['modal-menu__link', { current: route.name === 'faq' }]"
+                    >
+                        <span>Вопросы</span>
+                    </NuxtLink>
+                    <NuxtLink
+                        :to="{ name: 'contact' }"
+                        :class="['modal-menu__link', { current: route.name === 'contact' }]"
+                    >
+                        <span>Контакты</span>
                     </NuxtLink>
                 </nav>
                 <div class="modal-menu__footer">
                     <div class="modal-menu__socials">
                         <a
+                            v-if="contact?.tg"
                             class="modal-menu__socials-link"
                             target="_blank"
                             rel="noopener noreferrer"
-                            href="https://example.com"
+                            :href="contact.tg.trim().replace(/\s+/g, '')"
                         >
                             <SvgSprite type="socials-telegram" :size="48" />
                         </a>
                         <a
+                            v-if="contact?.vk"
                             class="modal-menu__socials-link"
                             target="_blank"
                             rel="noopener noreferrer"
-                            href="https://example.com"
+                            :href="contact.vk"
                         >
                             <SvgSprite type="socials-vk" :size="48" />
                         </a>
                         <a
+                            v-if="contact?.ok"
                             class="modal-menu__socials-link"
                             target="_blank"
                             rel="noopener noreferrer"
-                            href="https://example.com"
+                            :href="contact.ok"
                         >
                             <SvgSprite type="socials-ok" :size="48" />
                         </a>
                     </div>
 
                     <div class="modal-menu__controls">
-                        <button class="modal-menu__button" type="button">
-                            Политика конфиденциальности
-                        </button>
-                        <button class="modal-menu__button" type="button">Оферта</button>
-                        <button class="modal-menu__button" type="button">
-                            Пользовательское соглашение
+                        <button
+                            class="modal-menu__button"
+                            type="button"
+                            v-for="policy in policies"
+                            :key="policy.id"
+                            @click="
+                                openDocsModal(
+                                    policy.title,
+                                    policy.date_updated ?? policy.date_created,
+                                    policy.content
+                                )
+                            "
+                        >
+                            {{ policy.title }}
                         </button>
                     </div>
                 </div>
@@ -67,8 +120,12 @@
 </template>
 
 <script setup lang="ts">
-    import { VueFinalModal } from 'vue-final-modal';
-    import type { LocationQueryRaw, RouteParamsRawGeneric } from 'vue-router';
+    import { ModalsDocs } from '#components';
+    import { VueFinalModal, useModal } from 'vue-final-modal';
+
+    import type { IContact } from '~~/interfaces/contact';
+    import type { ITeamPage } from '~~/interfaces/team-page';
+    import type { IPolicy } from '~~/interfaces/policy';
 
     const emit = defineEmits<{
         (e: 'close'): void;
@@ -76,63 +133,25 @@
 
     const route = useRoute();
 
-    const navLinks: {
-        label: string;
-        path: {
-            name: string;
-            params?: RouteParamsRawGeneric;
-            query?: LocationQueryRaw;
-        };
-    }[] = [
-        {
-            label: 'Главная',
-            path: {
-                name: 'index',
+    const { content: teamPage } = useCms<ITeamPage>('team', ['main_partner.*']);
+    const { content: contact } = useCms<IContact>('contact');
+    const { content: policies, status: policiesStatus } = useCms<IPolicy[]>('policies');
+
+    function openDocsModal(title: string, dateUpdated: string, content: string) {
+        const { open: openModal, close: closeModal } = useModal({
+            component: ModalsDocs,
+            attrs: {
+                title: title,
+                dateUpdated: dateUpdated,
+                content: content,
+                status: policiesStatus.value,
+                onClose() {
+                    closeModal();
+                },
             },
-        },
-        {
-            label: 'Услуги',
-            path: {
-                name: 'services',
-            },
-        },
-        {
-            label: 'Команда',
-            path: {
-                name: 'about',
-            },
-        },
-        {
-            label: 'Практика',
-            path: {
-                name: 'cases',
-            },
-        },
-        {
-            label: 'Документы',
-            path: {
-                name: 'docs',
-            },
-        },
-        {
-            label: 'Статьи',
-            path: {
-                name: 'blog',
-            },
-        },
-        {
-            label: 'Вопросы',
-            path: {
-                name: 'faq',
-            },
-        },
-        {
-            label: 'Контакты',
-            path: {
-                name: 'contact',
-            },
-        },
-    ];
+        });
+        openModal();
+    }
 </script>
 
 <style scoped lang="scss">

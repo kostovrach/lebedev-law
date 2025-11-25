@@ -103,18 +103,7 @@
 
 <script setup lang="ts">
     import type { IPerson } from '~~/interfaces/person';
-    interface ITeamPage {
-        id: number | string;
-        date_updated: string | null;
-        image: string;
-        image_url: string;
-        title: string;
-        description: string | null;
-        main_partner: IPerson;
-        list_tag: string | null;
-        list_title: string;
-        page_enabled: boolean;
-    }
+    import type { ITeamPage } from '~~/interfaces/team-page';
 
     const { content: page } = useCms<ITeamPage>('team', ['main_partner.*']);
 
