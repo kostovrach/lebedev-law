@@ -148,21 +148,9 @@
                     <span><SvgSprite type="arrow" :size="12" /></span>
                 </a>
             </div>
-            <div class="footer__studio">
-                <div class="footer__studio-container">
-                    <a
-                        class="footer__studio-wrapper"
-                        href="https://kulaginstudio.ru"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <span class="footer__studio-label">Разработка и поддержка сайта</span>
-                        <SvgSprite class="footer__studio-logo" type="theplace" size="100%" />
-                    </a>
-                </div>
-            </div>
         </div>
     </footer>
+    <iframe src="//intheplace.ru/brand-iframe" height="62" scrolling="yes" frameborder="0"></iframe>
 </template>
 
 <script setup lang="ts">
@@ -363,28 +351,6 @@
             @include hover-blick-line;
             > span:has(svg) {
                 rotate: -90deg;
-            }
-        }
-        &__studio {
-            &-container {
-                display: flex;
-                justify-content: flex-end;
-            }
-            &-wrapper {
-                display: flex;
-                align-items: center;
-                gap: rem(16);
-                width: fit-content;
-                padding: rem(8) 0;
-            }
-            &-label {
-                color: $c-BFC4D5;
-                font-weight: $fw-semi;
-                font-size: rem(12);
-            }
-            &-logo {
-                max-width: rem(68);
-                height: rem(24);
             }
         }
     }

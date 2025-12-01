@@ -153,7 +153,7 @@
             if (!articleRef) return;
             const h2 = articleRef.value?.querySelectorAll('h2');
 
-            h2?.forEach((el, idx) => el.setAttribute('id', `target-${slugify(idx)}`));
+            h2?.forEach((el, idx) => el.setAttribute('id', `target-${idx}`));
             headers.value = Array.from(h2 ?? []).flatMap((el) => el.textContent);
         }, 300);
     });
@@ -262,7 +262,7 @@
             flex-direction: column;
             gap: rem(16);
             font-size: lineScale(17, 15, 480, 1920);
-            line-height: 1.4;
+            line-height: 1.5;
             h2,
             h3,
             h4,
@@ -303,6 +303,18 @@
                         text-decoration: none;
                     }
                 }
+            }
+            hr {
+                width: 100%;
+                height: rem(1);
+                background: linear-gradient(
+                    90deg,
+                    transparent 0%,
+                    rgba($c-BFC4D5, 0.5) 10%,
+                    rgba($c-BFC4D5, 0.5) 90%,
+                    transparent 100%
+                );
+                margin: rem(16) 0;
             }
         }
         &__hint {
