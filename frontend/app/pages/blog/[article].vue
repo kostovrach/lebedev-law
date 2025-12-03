@@ -291,7 +291,7 @@
             }
             img {
                 width: 100%;
-                height: rem(240);
+                height: 100%;
                 object-fit: cover;
                 margin-top: rem(32);
             }
